@@ -2,7 +2,7 @@ Sub Test_Macro()
 ' File name: Test_Macro Macro
 ' Author: Erin Payne
 ' Description: Final test file for additional data export.
-    
+
     Dim rowCount As Integer
     rowCount = 0
     
@@ -15,8 +15,8 @@ Sub Test_Macro()
         n = n + 1
     Wend
     
-    'TT FTE data copy
-    Sheets("FTE Input").Range("A8:EH19").Copy         'initializes macro at "FTE Input" sheet       TO DO: Change fixed range
+    'TT FTE data copy                A9              EH19
+    Sheets("FTE Input").Range(Cells(9, 1), Cells(n - 1, 138)).Copy    'initializes macro at "FTE Input" sheet       TO DO: Change fixed range
     'Copies and pastes TT FTE information to blank sheet
     Sheets("Blank Sheet 2").Range("A1").PasteSpecial Paste:=xlPasteValuesAndNumberFormats, Operation:= _
         xlNone, SkipBlanks:=False, Transpose:=False
