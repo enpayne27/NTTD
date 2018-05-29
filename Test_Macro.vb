@@ -2,7 +2,19 @@ Sub Test_Macro()
 ' File name: Test_Macro Macro
 ' Author: Erin Payne
 ' Description: Final test file for additional data export.
-
+    
+    Dim rowCount As Integer
+    rowCount = 0
+    
+    Dim n As Integer
+    n = 9
+    
+    While Sheets("FTE Input").Cells(n, 1).Value <> "DO NOT DELETE THIS ROW!!!"
+        rowCount = rowCount + 1
+        MsgBox ("Rows = " & rowCount)
+        n = n + 1
+    Wend
+    
     'TT FTE data copy
     Sheets("FTE Input").Range("A8:EH19").Copy         'initializes macro at "FTE Input" sheet       TO DO: Change fixed range
     'Copies and pastes TT FTE information to blank sheet
