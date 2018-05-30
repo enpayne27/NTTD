@@ -3,83 +3,133 @@ Sub Test_Macro()
 ' Author: Erin Payne
 ' Description: Final test file for additional data export.
 
-    Dim rowCount As Integer
+    Dim rowCount As Integer 'Row count of TT data
     rowCount = 0
     
-    Dim n As Integer
-    n = 9
+    Dim copyStart As Integer 'Cell to start copy
+    copyStart = 8
     
-    While Sheets("FTE Input").Cells(n, 1).Value <> "DO NOT DELETE THIS ROW!!!"
+    Dim pasteLoc As Integer 'Cell to start paste
+    
+    Dim curRow As Integer 'Current cell of data being copied
+    curRow = 9
+    
+    'Counts row size of TT data
+    While Sheets("FTE Input").Cells(curRow, 1).Value <> "DO NOT DELETE THIS ROW!!!"
         rowCount = rowCount + 1
-        MsgBox ("Rows = " & rowCount)
-        n = n + 1
+        curRow = curRow + 1
     Wend
+    MsgBox ("TT Rows = " & rowCount)   'Displays row count
     
     'TT FTE data copy
-    Sheets("FTE Input").Activate
-    Sheets("FTE Input").Range(Cells(8, 1), Cells(n - 1, 138)).Copy          'initializes macro at "FTE Input" sheet       TO DO: Change fixed range
+    Sheets("FTE Input").Activate                                    'initializes macro at "FTE Input" sheet
     'Copies and pastes TT FTE information to blank sheet
-    Sheets("Blank Sheet 2").Activate
-    Sheets("Blank Sheet 2").Range("A1").PasteSpecial Paste:=xlPasteValuesAndNumberFormats, Operation:= _
-        xlNone, SkipBlanks:=False, Transpose:=False
-    Range("A1").FormulaR1C1 = "Category"              'Renames "Labor" heading to "Category"
-    Rows(1).Style = "Input Heading"                   'Adds heading format to first row
-    Range("A2").FormulaR1C1 = "TT FTE"                'Renames "Labor" to "TT FTE"
-    Range("A2").AutoFill Destination:=Range("A2:A12"), Type:=xlFillDefault                         'TO DO: Change fixed range
+    Sheets("FTE Input").Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy 'Copies TT data for transfer
+    Sheets("Blank Sheet 2").Activate                                'initializes macro at "Blank Sheet 2" for pasting
+    Sheets("Blank Sheet 2").Range("A1").PasteSpecial _
+        Paste:=xlPasteValuesAndNumberFormats, Operation:= _
+        xlNone, SkipBlanks:=False, Transpose:=False                 'Pastes data to blank sheet
+    Range("A1").FormulaR1C1 = "Category"                            'Renames "Labor" heading to "Category"
+    Rows(1).Style = "Input Heading"                                 'Adds heading format to first row
+    Range("A2").FormulaR1C1 = "TT FTE"                              'Renames "Labor" to "TT FTE"
+    Range("A2").AutoFill Destination:=Range(Cells(2, 1), Cells(rowCount + 1, 1)), Type:=xlFillDefault
+    copyStart = copyStart + 1
+    pasteLoc = rowCount + 2
     
     'TT Base Labor Cost data copy
-    Sheets("FTE Input").Range("A9:EH19").Copy         'initializes macro at "FTE Input" sheet       TO DO: Change fixed range
+    Sheets("FTE Input").Activate                                                'initializes macro at "FTE Input" sheet
     'Copies and pastes TT FTE information to blank sheet
-    Sheets("Blank Sheet 2").Range("A13").PasteSpecial Paste:=xlPasteValuesAndNumberFormats, Operation:= _
-        xlNone, SkipBlanks:=False, Transpose:=False
-    Range("A13").FormulaR1C1 = "TT Base Labor Cost"   'Renames "Labor" to "TT Base Labor Cost"
-    Range("A13").AutoFill Destination:=Range("A13:A23"), Type:=xlFillDefault                       'TO DO: Change fixed range
-    
+    Sheets("FTE Input").Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy 'Copies TT data for transfer
+    Sheets("Blank Sheet 2").Activate
+    Sheets("Blank Sheet 2").Cells(pasteLoc, 1).PasteSpecial _
+        Paste:=xlPasteValuesAndNumberFormats, Operation:= _
+        xlNone, SkipBlanks:=False, Transpose:=False                             'Pastes data to blank sheet
+    Cells(pasteLoc, 1).FormulaR1C1 = "TT Base Labor Cost"                       'Renames "Labor" to "TT Base Labor Cost"
+    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
+    pasteLoc = pasteLoc + rowCount
+
     'TT Cost COLA data copy
-    Sheets("FTE Input").Range("A9:EH19").Copy         'initializes macro at "FTE Input" sheet       TO DO: Change fixed range
+    Sheets("FTE Input").Activate                                                 'initializes macro at "FTE Input" sheet
     'Copies and pastes TT FTE information to blank sheet
-    Sheets("Blank Sheet 2").Range("A24").PasteSpecial Paste:=xlPasteValuesAndNumberFormats, Operation:= _
-        xlNone, SkipBlanks:=False, Transpose:=False
-    Range("A24").FormulaR1C1 = "TT Cost COLA"         'Renames "Labor" to "TT Cost COLA"
-    Range("A24").AutoFill Destination:=Range("A24:A34"), Type:=xlFillDefault                        'TO DO: Change fixed range
-    
+    Sheets("FTE Input").Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy  'Copies TT data for transfer
+    Sheets("Blank Sheet 2").Activate
+    Sheets("Blank Sheet 2").Cells(pasteLoc, 1).PasteSpecial _
+        Paste:=xlPasteValuesAndNumberFormats, Operation:= _
+        xlNone, SkipBlanks:=False, Transpose:=False                              'Pastes data to blank sheet
+    Cells(pasteLoc, 1).FormulaR1C1 = "TT Cost COLA"                              'Renames "Labor" to "TT Cost COLA"
+    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
+    pasteLoc = pasteLoc + rowCount
+
     'TT Cost Contingency data copy
-    Sheets("FTE Input").Range("A9:EH19").Copy         'initializes macro at "FTE Input" sheet       TO DO: Change fixed range
+    Sheets("FTE Input").Activate                                                 'initializes macro at "FTE Input" sheet
     'Copies and pastes TT FTE information to blank sheet
-    Sheets("Blank Sheet 2").Range("A35").PasteSpecial Paste:=xlPasteValuesAndNumberFormats, Operation:= _
-        xlNone, SkipBlanks:=False, Transpose:=False
-    Range("A35").FormulaR1C1 = "TT Cost Contingency"  'Renames "Labor" to "TT Cost Contingency"
-    Range("A35").AutoFill Destination:=Range("A35:A45"), Type:=xlFillDefault                        'TO DO: Change fixed range
+    Sheets("FTE Input").Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy  'Copies TT data for transfer
+    Sheets("Blank Sheet 2").Activate
+    Sheets("Blank Sheet 2").Cells(pasteLoc, 1).PasteSpecial _
+        Paste:=xlPasteValuesAndNumberFormats, Operation:= _
+        xlNone, SkipBlanks:=False, Transpose:=False                              'Pastes data to blank sheet
+    Cells(pasteLoc, 1).FormulaR1C1 = "TT Cost Contingency"                       'Renames "Labor" to "TT Cost Contingency"
+    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
+    pasteLoc = pasteLoc + rowCount  '54
     
+    
+    'Sets parameters for SS data copy
+    copyStart = 32
+    curRow = 32
+    rowCount = 0
+
+    'Counts row size of SS data
+    While Sheets("FTE Input").Cells(curRow, 1).Value <> "DO NOT DELETE THIS ROW!!!"
+        rowCount = rowCount + 1 '10
+        curRow = curRow + 1 '42
+    Wend
+    MsgBox ("SS Rows = " & rowCount)   'Displays row count
+
     'SS FTE data copy
-    Sheets("FTE Input").Range("A30:EH39").Copy        'initializes macro at "FTE Input" sheet       TO DO: Change fixed range
+    Sheets("FTE Input").Activate                                                'initializes macro at "FTE Input" sheet
     'Copies and pastes TT FTE information to blank sheet
-    Sheets("Blank Sheet 2").Range("A46").PasteSpecial Paste:=xlPasteValuesAndNumberFormats, Operation:= _
-        xlNone, SkipBlanks:=False, Transpose:=False
-    Range("A46").FormulaR1C1 = "SS FTE"               'Renames "Labor" to "SS FTE"
-    Range("A46").AutoFill Destination:=Range("A46:A55"), Type:=xlFillDefault                        'TO DO: Change fixed range
-    
+    Sheets("FTE Input").Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy 'Copies TT data for transfer
+    Sheets("Blank Sheet 2").Activate                                            'initializes macro at "Blank Sheet 2" for pasting
+    Sheets("Blank Sheet 2").Cells(pasteLoc, 1).PasteSpecial _
+        Paste:=xlPasteValuesAndNumberFormats, Operation:= _
+        xlNone, SkipBlanks:=False, Transpose:=False                             'Pastes data to blank sheet
+    Cells(pasteLoc, 1).FormulaR1C1 = "SS FTE"                                   'Renames "Labor" to "SS FTE"
+    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
+    pasteLoc = pasteLoc + rowCount
+
     'SS Base Labor Cost data copy
-    Sheets("FTE Input").Range("A30:EH39").Copy        'initializes macro at "FTE Input" sheet       TO DO: Change fixed range
+    Sheets("FTE Input").Activate                                                'initializes macro at "FTE Input" sheet
     'Copies and pastes TT FTE information to blank sheet
-    Sheets("Blank Sheet 2").Range("A56").PasteSpecial Paste:=xlPasteValuesAndNumberFormats, Operation:= _
-        xlNone, SkipBlanks:=False, Transpose:=False
-    Range("A56").FormulaR1C1 = "SS Base Labor Cost"   'Renames "Labor" to "SS Base Labor Cost"
-    Range("A56").AutoFill Destination:=Range("A56:A65"), Type:=xlFillDefault                        'TO DO: Change fixed range
-    
+    Sheets("FTE Input").Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy 'Copies TT data for transfer
+    Sheets("Blank Sheet 2").Activate
+    Sheets("Blank Sheet 2").Cells(pasteLoc, 1).PasteSpecial _
+        Paste:=xlPasteValuesAndNumberFormats, Operation:= _
+        xlNone, SkipBlanks:=False, Transpose:=False                             'Pastes data to blank sheet
+    Cells(pasteLoc, 1).FormulaR1C1 = "SS Base Labor Cost"                       'Renames "Labor" to "SS Base Labor Cost"
+    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
+    pasteLoc = pasteLoc + rowCount
+
     'SS Cost COLA data copy
-    Sheets("FTE Input").Range("A30:EH39").Copy        'initializes macro at "FTE Input" sheet       TO DO: Change fixed range
+    Sheets("FTE Input").Activate                                                'initializes macro at "FTE Input" sheet
     'Copies and pastes TT FTE information to blank sheet
-    Sheets("Blank Sheet 2").Range("A66").PasteSpecial Paste:=xlPasteValuesAndNumberFormats, Operation:= _
-        xlNone, SkipBlanks:=False, Transpose:=False
-    Range("A66").FormulaR1C1 = "SS Cost COLA"         'Renames "Labor" to "SS Cost COLA"
-    Range("A66").AutoFill Destination:=Range("A66:A75"), Type:=xlFillDefault                        'TO DO: Change fixed range
-    
+    Sheets("FTE Input").Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy 'Copies TT data for transfer
+    Sheets("Blank Sheet 2").Activate
+    Sheets("Blank Sheet 2").Cells(pasteLoc, 1).PasteSpecial _
+        Paste:=xlPasteValuesAndNumberFormats, Operation:= _
+        xlNone, SkipBlanks:=False, Transpose:=False                             'Pastes data to blank sheet
+    Cells(pasteLoc, 1).FormulaR1C1 = "SS Cost COLA"                             'Renames "Labor" to "SS Cost COLA"
+    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
+    pasteLoc = pasteLoc + rowCount
+
     'SS Cost Contingency data copy
-    Sheets("FTE Input").Range("A30:EH39").Copy         'initializes macro at "FTE Input" sheet       TO DO: Change fixed range
+    Sheets("FTE Input").Activate                                                'initializes macro at "FTE Input" sheet
     'Copies and pastes TT FTE information to blank sheet
-    Sheets("Blank Sheet 2").Range("A76").PasteSpecial Paste:=xlPasteValuesAndNumberFormats, Operation:= _
-        xlNone, SkipBlanks:=False, Transpose:=False
-    Range("A76").FormulaR1C1 = "SS Cost Contingency"   'Renames "Labor" to "SS Cost Contingency"
-    Range("A76").AutoFill Destination:=Range("A76:A85"), Type:=xlFillDefault                        'TO DO: Change fixed range
+    Sheets("FTE Input").Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy 'Copies TT data for transfer
+    Sheets("Blank Sheet 2").Activate
+    Sheets("Blank Sheet 2").Cells(pasteLoc, 1).PasteSpecial _
+        Paste:=xlPasteValuesAndNumberFormats, Operation:= _
+        xlNone, SkipBlanks:=False, Transpose:=False                             'Pastes data to blank sheet
+    Cells(pasteLoc, 1).FormulaR1C1 = "SS Cost Contingency"                      'Renames "Labor" to "SS Cost Contingency"
+    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
+    pasteLoc = pasteLoc + rowCount
 End Sub
