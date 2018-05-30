@@ -230,7 +230,7 @@ Sub Test_Macro()
     Sheets("Blank Sheet 2").Range(Cells(otherIn, 18), Cells(pasteLoc - 1, 18)).Cut Range(Cells(otherIn, 2), Cells(pasteLoc - 1, 2))
     Application.CutCopyMode = False
     
-    'includes "LOB" information
+    'Sets parameters for TT "LOB" information
     copyStart = 9
     curRow = 2
     'TT LOB data copy
@@ -242,10 +242,10 @@ Sub Test_Macro()
         Sheets("Blank Sheet 2").Range(Cells(curRow, 5), Cells(curRow + ttRC - 1, 5)).PasteSpecial _
             Paste:=xlPasteValuesAndNumberFormats, Operation:= _
             xlNone, SkipBlanks:=False, Transpose:=False                                         'Pastes data to blank sheet
-        curRow = curRow + ttRC
+        curRow = curRow + ttRC                                                                  'Increments current row
     Next i
     
-    'includes "LOB" information
+    'Sets parameters for SS "LOB" information
     copyStart = 32
     'SS LOB data copy
     For i = 1 To 4
@@ -255,6 +255,41 @@ Sub Test_Macro()
         Sheets("Blank Sheet 2").Range(Cells(curRow, 5), Cells(curRow + ssRC - 1, 5)).PasteSpecial _
             Paste:=xlPasteValuesAndNumberFormats, Operation:= _
             xlNone, SkipBlanks:=False, Transpose:=False                                         'Pastes data to blank sheet
-        curRow = curRow + ssRC
+        curRow = curRow + ssRC                                                                  'Increments current row
     Next i
+    
+    'Moves Other Input LOB information to column E for unity
+    Sheets("Blank Sheet 2").Range(Cells(otherIn, 10), Cells(pasteLoc - 1, 10)).Cut Range(Cells(otherIn, 5), Cells(pasteLoc - 1, 5))
+    Application.CutCopyMode = False
+    
+    'Sets parameters for TT "Shore" information
+    copyStart = 9
+    curRow = 2
+    'TT LOB data copy
+    For i = 1 To 4
+        Sheets("FTE Input").Activate
+        Sheets("FTE Input").Range(Cells(copyStart, 163), Cells(copyStart + ttRC - 1, 163)).Copy 'Copies data for transfer
+        Sheets("Blank Sheet 2").Activate
+        Sheets("Blank Sheet 2").Range(Cells(curRow, 8), Cells(curRow + ttRC - 1, 8)).PasteSpecial _
+            Paste:=xlPasteValuesAndNumberFormats, Operation:= _
+            xlNone, SkipBlanks:=False, Transpose:=False                                         'Pastes data to blank sheet
+        curRow = curRow + ttRC                                                                  'Increments current row
+    Next i
+    
+    'Sets parameters for SS "Shore" information
+    copyStart = 32
+    'SS LOB data copy
+    For i = 1 To 4
+        Sheets("FTE Input").Activate
+        Sheets("FTE Input").Range(Cells(copyStart, 163), Cells(copyStart + ssRC - 1, 163)).Copy 'Copies data for transfer
+        Sheets("Blank Sheet 2").Activate
+        Sheets("Blank Sheet 2").Range(Cells(curRow, 8), Cells(curRow + ssRC - 1, 8)).PasteSpecial _
+            Paste:=xlPasteValuesAndNumberFormats, Operation:= _
+            xlNone, SkipBlanks:=False, Transpose:=False                                         'Pastes data to blank sheet
+        curRow = curRow + ssRC                                                                  'Increments current row
+    Next i
+
+    'Moves Other Input Shore information to column H for unity
+    Sheets("Blank Sheet 2").Range(Cells(otherIn, 9), Cells(pasteLoc - 1, 9)).Cut Range(Cells(otherIn, 8), Cells(pasteLoc - 1, 8))
+    Application.CutCopyMode = False
 End Sub
