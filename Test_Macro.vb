@@ -70,7 +70,7 @@ Sub Test_Macro()
         xlNone, SkipBlanks:=False, Transpose:=False                              'Pastes data to blank sheet
     Cells(pasteLoc, 1).FormulaR1C1 = "TT Cost Contingency"                       'Renames "Labor" to "TT Cost Contingency"
     Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
-    pasteLoc = pasteLoc + rowCount  '54
+    pasteLoc = pasteLoc + rowCount
     
     
     'Sets parameters for SS data copy
@@ -80,8 +80,8 @@ Sub Test_Macro()
 
     'Counts row size of SS data
     While Sheets("FTE Input").Cells(curRow, 1).Value <> "DO NOT DELETE THIS ROW!!!"
-        rowCount = rowCount + 1 '10
-        curRow = curRow + 1 '42
+        rowCount = rowCount + 1
+        curRow = curRow + 1
     Wend
     MsgBox ("SS Rows = " & rowCount)   'Displays row count
 
@@ -130,6 +130,79 @@ Sub Test_Macro()
         Paste:=xlPasteValuesAndNumberFormats, Operation:= _
         xlNone, SkipBlanks:=False, Transpose:=False                             'Pastes data to blank sheet
     Cells(pasteLoc, 1).FormulaR1C1 = "SS Cost Contingency"                      'Renames "Labor" to "SS Cost Contingency"
+    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
+    pasteLoc = pasteLoc + rowCount
+    
+    
+    'Sets parameters for Travel data copy
+    copyStart = 8
+    curRow = 8
+    rowCount = 0
+
+    'Counts row size of Travel data
+    While Sheets("Other Input").Cells(curRow, 1).Value <> "DO NOT DELETE THIS ROW!!!"
+        rowCount = rowCount + 1
+        curRow = curRow + 1
+    Wend
+    MsgBox ("Travel Rows = " & rowCount)   'Displays row count
+    
+    'Travel Cost data copy
+    Sheets("Other Input").Activate                                                'initializes macro at "Other Input" sheet
+    'Copies and pastes TT FTE information to blank sheet
+    Sheets("Other Input").Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy 'Copies Travel data for transfer
+    Sheets("Blank Sheet 2").Activate                                              'initializes macro at "Blank Sheet 2" for pasting
+    Sheets("Blank Sheet 2").Cells(pasteLoc, 1).PasteSpecial _
+        Paste:=xlPasteValuesAndNumberFormats, Operation:= _
+        xlNone, SkipBlanks:=False, Transpose:=False                               'Pastes data to blank sheet
+    Cells(pasteLoc, 1).FormulaR1C1 = "Travel Cost"                                'Renames "Travel" to "Travel Cost"
+    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
+    pasteLoc = pasteLoc + rowCount
+    
+    'Sets parameters for Other data copy
+    copyStart = 21
+    curRow = 21
+    rowCount = 0
+
+    'Counts row size of Other data
+    While Sheets("Other Input").Cells(curRow, 1).Value <> "DO NOT DELETE THIS ROW!!!"
+        rowCount = rowCount + 1
+        curRow = curRow + 1
+    Wend
+    MsgBox ("Other Rows = " & rowCount)   'Displays row count
+    
+    'Travel Cost data copy
+    Sheets("Other Input").Activate                                                'initializes macro at "Other Input" sheet
+    'Copies and pastes TT FTE information to blank sheet
+    Sheets("Other Input").Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy 'Copies Other data for transfer
+    Sheets("Blank Sheet 2").Activate                                              'initializes macro at "Blank Sheet 2" for pasting
+    Sheets("Blank Sheet 2").Cells(pasteLoc, 1).PasteSpecial _
+        Paste:=xlPasteValuesAndNumberFormats, Operation:= _
+        xlNone, SkipBlanks:=False, Transpose:=False                               'Pastes data to blank sheet
+    Cells(pasteLoc, 1).FormulaR1C1 = "Other Cost"                                'Renames "Other" to "Other Cost"
+    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
+    pasteLoc = pasteLoc + rowCount
+    
+    'Sets parameters for HW/SW data copy
+    copyStart = 34
+    curRow = 34
+    rowCount = 0
+
+    'Counts row size of HW/SW data
+    While Sheets("Other Input").Cells(curRow, 1).Value <> "DO NOT DELETE THIS ROW!!!"
+        rowCount = rowCount + 1
+        curRow = curRow + 1
+    Wend
+    MsgBox ("HW/SW Rows = " & rowCount)   'Displays row count
+    
+    'Travel Cost data copy
+    Sheets("Other Input").Activate                                                'initializes macro at "Other Input" sheet
+    'Copies and pastes TT FTE information to blank sheet
+    Sheets("Other Input").Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy 'Copies HW/SW data for transfer
+    Sheets("Blank Sheet 2").Activate                                              'initializes macro at "Blank Sheet 2" for pasting
+    Sheets("Blank Sheet 2").Cells(pasteLoc, 1).PasteSpecial _
+        Paste:=xlPasteValuesAndNumberFormats, Operation:= _
+        xlNone, SkipBlanks:=False, Transpose:=False                               'Pastes data to blank sheet
+    Cells(pasteLoc, 1).FormulaR1C1 = "HW/SW Cost"                                'Renames "HW/SW" to "HW/SW Cost"
     Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
     pasteLoc = pasteLoc + rowCount
 End Sub
