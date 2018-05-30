@@ -138,7 +138,7 @@ Sub Test_Macro()
     
     
     'Sets parameters for Travel data copy
-    copyStart = 8
+    copyStart = 7
     curRow = 8
     rowCount = 0
 
@@ -157,9 +157,11 @@ Sub Test_Macro()
     Sheets("Blank Sheet 2").Cells(pasteLoc, 1).PasteSpecial _
         Paste:=xlPasteValuesAndNumberFormats, Operation:= _
         xlNone, SkipBlanks:=False, Transpose:=False                               'Pastes data to blank sheet
-    Cells(pasteLoc, 1).FormulaR1C1 = "Travel Cost"                                'Renames "Travel" to "Travel Cost"
-    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
-    pasteLoc = pasteLoc + rowCount
+    Cells(otherIn, 2).FormulaR1C1 = "Category"                            'Renames "Labor" heading to "Category"
+    Rows(otherIn).Style = "Input Heading"                                 'Adds heading format to first row
+    Cells(pasteLoc + 1, 1).FormulaR1C1 = "Travel Cost"                               'Renames "Travel" to "Travel Cost"
+    Cells(pasteLoc + 1, 1).AutoFill Destination:=Range(Cells(pasteLoc + 1, 1), Cells(pasteLoc + rowCount, 1)), Type:=xlFillDefault
+    pasteLoc = pasteLoc + rowCount + 1
     
     'Sets parameters for Other data copy
     copyStart = 21
