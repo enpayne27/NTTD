@@ -15,9 +15,11 @@ Sub Test_Macro()
         n = n + 1
     Wend
     
-    'TT FTE data copy                A9              EH19
-    Sheets("FTE Input").Range(Cells(9, 1), Cells(n - 1, 138)).Copy    'initializes macro at "FTE Input" sheet       TO DO: Change fixed range
+    'TT FTE data copy
+    Sheets("FTE Input").Activate
+    Sheets("FTE Input").Range(Cells(8, 1), Cells(n - 1, 138)).Copy          'initializes macro at "FTE Input" sheet       TO DO: Change fixed range
     'Copies and pastes TT FTE information to blank sheet
+    Sheets("Blank Sheet 2").Activate
     Sheets("Blank Sheet 2").Range("A1").PasteSpecial Paste:=xlPasteValuesAndNumberFormats, Operation:= _
         xlNone, SkipBlanks:=False, Transpose:=False
     Range("A1").FormulaR1C1 = "Category"              'Renames "Labor" heading to "Category"
