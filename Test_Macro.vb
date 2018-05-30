@@ -132,6 +132,9 @@ Sub Test_Macro()
     Cells(pasteLoc, 1).FormulaR1C1 = "SS Cost Contingency"                      'Renames "Labor" to "SS Cost Contingency"
     Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
     pasteLoc = pasteLoc + rowCount
+    'Saves start of "Other Input" for billing info move
+    Dim otherIn As Integer
+    otherIn = pasteLoc
     
     
     'Sets parameters for Travel data copy
@@ -170,7 +173,7 @@ Sub Test_Macro()
     Wend
     MsgBox ("Other Rows = " & rowCount)   'Displays row count
     
-    'Travel Cost data copy
+    'Other Cost data copy
     Sheets("Other Input").Activate                                                'initializes macro at "Other Input" sheet
     'Copies and pastes TT FTE information to blank sheet
     Sheets("Other Input").Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy 'Copies Other data for transfer
@@ -178,7 +181,7 @@ Sub Test_Macro()
     Sheets("Blank Sheet 2").Cells(pasteLoc, 1).PasteSpecial _
         Paste:=xlPasteValuesAndNumberFormats, Operation:= _
         xlNone, SkipBlanks:=False, Transpose:=False                               'Pastes data to blank sheet
-    Cells(pasteLoc, 1).FormulaR1C1 = "Other Cost"                                'Renames "Other" to "Other Cost"
+    Cells(pasteLoc, 1).FormulaR1C1 = "Other Cost"                                 'Renames "Other" to "Other Cost"
     Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
     pasteLoc = pasteLoc + rowCount
     
@@ -194,7 +197,7 @@ Sub Test_Macro()
     Wend
     MsgBox ("HW/SW Rows = " & rowCount)   'Displays row count
     
-    'Travel Cost data copy
+    'HW/SW Cost data copy
     Sheets("Other Input").Activate                                                'initializes macro at "Other Input" sheet
     'Copies and pastes TT FTE information to blank sheet
     Sheets("Other Input").Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy 'Copies HW/SW data for transfer
@@ -202,7 +205,18 @@ Sub Test_Macro()
     Sheets("Blank Sheet 2").Cells(pasteLoc, 1).PasteSpecial _
         Paste:=xlPasteValuesAndNumberFormats, Operation:= _
         xlNone, SkipBlanks:=False, Transpose:=False                               'Pastes data to blank sheet
-    Cells(pasteLoc, 1).FormulaR1C1 = "HW/SW Cost"                                'Renames "HW/SW" to "HW/SW Cost"
+    Cells(pasteLoc, 1).FormulaR1C1 = "HW/SW Cost"                                 'Renames "HW/SW" to "HW/SW Cost"
     Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
     pasteLoc = pasteLoc + rowCount
+    
+    'Inserts "LOB" column
+    Columns("E:E").Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+    Range("E1").FormulaR1C1 = "LOB"
+    'Inserts "Shore" column
+    Columns("H:H").Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+    Range("H1").FormulaR1C1 = "Shore"
+    
+    'Moves Other Input billing information to column B for unity
+    Sheets("Blank Sheet 2").Range(Cells(otherIn, 18), Cells(pasteLoc - 1, 18)).Cut Range(Cells(otherIn, 2), Cells(pasteLoc - 1, 2))
+    Application.CutCopyMode = False
 End Sub
