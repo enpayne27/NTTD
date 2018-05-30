@@ -19,7 +19,9 @@ Sub Test_Macro()
         rowCount = rowCount + 1
         curRow = curRow + 1
     Wend
-    MsgBox ("TT Rows = " & rowCount)   'Displays row count
+    Dim ttRC As Integer
+    ttRC = rowCount
+    'MsgBox ("TT Rows = " & rowCount)   'Displays row count
     
     'TT FTE data copy
     Sheets("FTE Input").Activate                                    'initializes macro at "FTE Input" sheet
@@ -83,7 +85,9 @@ Sub Test_Macro()
         rowCount = rowCount + 1
         curRow = curRow + 1
     Wend
-    MsgBox ("SS Rows = " & rowCount)   'Displays row count
+    Dim ssRC As Integer
+    ssRC = rowCount
+    'MsgBox ("SS Rows = " & rowCount)   'Displays row count
 
     'SS FTE data copy
     Sheets("FTE Input").Activate                                                'initializes macro at "FTE Input" sheet
@@ -138,7 +142,7 @@ Sub Test_Macro()
     
     
     'Sets parameters for Travel data copy
-    copyStart = 7
+    copyStart = 8
     curRow = 8
     rowCount = 0
 
@@ -147,7 +151,9 @@ Sub Test_Macro()
         rowCount = rowCount + 1
         curRow = curRow + 1
     Wend
-    MsgBox ("Travel Rows = " & rowCount)   'Displays row count
+    Dim travelRC As Integer
+    travelRC = rowCount
+    'MsgBox ("Travel Rows = " & rowCount)   'Displays row count
     
     'Travel Cost data copy
     Sheets("Other Input").Activate                                                'initializes macro at "Other Input" sheet
@@ -157,11 +163,9 @@ Sub Test_Macro()
     Sheets("Blank Sheet 2").Cells(pasteLoc, 1).PasteSpecial _
         Paste:=xlPasteValuesAndNumberFormats, Operation:= _
         xlNone, SkipBlanks:=False, Transpose:=False                               'Pastes data to blank sheet
-    Cells(otherIn, 2).FormulaR1C1 = "Category"                            'Renames "Labor" heading to "Category"
-    Rows(otherIn).Style = "Input Heading"                                 'Adds heading format to first row
-    Cells(pasteLoc + 1, 1).FormulaR1C1 = "Travel Cost"                               'Renames "Travel" to "Travel Cost"
-    Cells(pasteLoc + 1, 1).AutoFill Destination:=Range(Cells(pasteLoc + 1, 1), Cells(pasteLoc + rowCount, 1)), Type:=xlFillDefault
-    pasteLoc = pasteLoc + rowCount + 1
+    Cells(pasteLoc, 1).FormulaR1C1 = "Travel Cost"                                'Renames "Travel" to "Travel Cost"
+    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
+    pasteLoc = pasteLoc + rowCount
     
     'Sets parameters for Other data copy
     copyStart = 21
@@ -173,7 +177,9 @@ Sub Test_Macro()
         rowCount = rowCount + 1
         curRow = curRow + 1
     Wend
-    MsgBox ("Other Rows = " & rowCount)   'Displays row count
+    Dim otherRC As Integer
+    otherRC = rowCount
+    'MsgBox ("Other Rows = " & rowCount)   'Displays row count
     
     'Other Cost data copy
     Sheets("Other Input").Activate                                                'initializes macro at "Other Input" sheet
@@ -197,7 +203,9 @@ Sub Test_Macro()
         rowCount = rowCount + 1
         curRow = curRow + 1
     Wend
-    MsgBox ("HW/SW Rows = " & rowCount)   'Displays row count
+    Dim hwswRC As Integer
+    hwswRC = rowCount
+    'MsgBox ("HW/SW Rows = " & rowCount)   'Displays row count
     
     'HW/SW Cost data copy
     Sheets("Other Input").Activate                                                'initializes macro at "Other Input" sheet
@@ -221,4 +229,32 @@ Sub Test_Macro()
     'Moves Other Input billing information to column B for unity
     Sheets("Blank Sheet 2").Range(Cells(otherIn, 18), Cells(pasteLoc - 1, 18)).Cut Range(Cells(otherIn, 2), Cells(pasteLoc - 1, 2))
     Application.CutCopyMode = False
+    
+    'includes "LOB" information
+    copyStart = 9
+    curRow = 2
+    'TT LOB data copy
+    Dim i As Integer
+    For i = 1 To 4
+        Sheets("FTE Input").Activate
+        Sheets("FTE Input").Range(Cells(copyStart, 164), Cells(copyStart + ttRC - 1, 164)).Copy 'Copies data for transfer
+        Sheets("Blank Sheet 2").Activate
+        Sheets("Blank Sheet 2").Range(Cells(curRow, 5), Cells(curRow + ttRC - 1, 5)).PasteSpecial _
+            Paste:=xlPasteValuesAndNumberFormats, Operation:= _
+            xlNone, SkipBlanks:=False, Transpose:=False                                         'Pastes data to blank sheet
+        curRow = curRow + ttRC
+    Next i
+    
+    'includes "LOB" information
+    copyStart = 32
+    'SS LOB data copy
+    For i = 1 To 4
+        Sheets("FTE Input").Activate
+        Sheets("FTE Input").Range(Cells(copyStart, 164), Cells(copyStart + ssRC - 1, 164)).Copy 'Copies data for transfer
+        Sheets("Blank Sheet 2").Activate
+        Sheets("Blank Sheet 2").Range(Cells(curRow, 5), Cells(curRow + ssRC - 1, 5)).PasteSpecial _
+            Paste:=xlPasteValuesAndNumberFormats, Operation:= _
+            xlNone, SkipBlanks:=False, Transpose:=False                                         'Pastes data to blank sheet
+        curRow = curRow + ssRC
+    Next i
 End Sub
