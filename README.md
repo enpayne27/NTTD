@@ -1,2 +1,2 @@
 # NTTD Repository
-Personal repository for project versions and reversions.
+Includes the most recent versions of the following codes: Export_Macro, GetRowCount, and SetTopBorder.
