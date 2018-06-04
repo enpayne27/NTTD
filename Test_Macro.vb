@@ -22,6 +22,8 @@ Sub Export_Macro()
     Dim exportSheet As String 'Sheet pasting input to
     exportSheet = "Blank Sheet 2"
     
+    Dim category As String 'Category title of data inputted
+    
     'Counts row size of TT data
     Call GetRowCount(inputSheet, curRow, rowCount)
     Dim ttRC As Integer
@@ -43,40 +45,16 @@ Sub Export_Macro()
     pasteLoc = rowCount + 2
     
     'TT Base Labor Cost data copy
-    Sheets(inputSheet).Activate                                                'initializes macro at "FTE Input" sheet
-    'Copies and pastes TT FTE information to blank sheet
-    Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy                    'Copies data for transfer
-    Sheets(exportSheet).Activate
-    Cells(pasteLoc, 1).PasteSpecial Paste:=xlPasteValuesAndNumberFormats, _
-        Operation:=xlNone, SkipBlanks:=False, Transpose:=False                 'Pastes data to blank sheet
-    Cells(pasteLoc, 1).FormulaR1C1 = "TT Base Labor Cost"                      'Renames "Labor" to "TT Base Labor Cost"
-    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
-    Call SetTopBorder(pasteLoc)
-    pasteLoc = pasteLoc + rowCount
+    category = "TT Base Labor Cost"
+    Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
 
     'TT Cost COLA data copy
-    Sheets(inputSheet).Activate                                                'initializes macro at "FTE Input" sheet
-    'Copies and pastes TT FTE information to blank sheet
-    Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy                    'Copies data for transfer
-    Sheets(exportSheet).Activate
-    Cells(pasteLoc, 1).PasteSpecial Paste:=xlPasteValuesAndNumberFormats, _
-        Operation:=xlNone, SkipBlanks:=False, Transpose:=False                 'Pastes data to blank sheet
-    Cells(pasteLoc, 1).FormulaR1C1 = "TT Cost COLA"                            'Renames "Labor" to "TT Cost COLA"
-    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
-    Call SetTopBorder(pasteLoc)
-    pasteLoc = pasteLoc + rowCount
+    category = "TT Cost COLA"
+    Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
 
     'TT Cost Contingency data copy
-    Sheets(inputSheet).Activate                                                'initializes macro at "FTE Input" sheet
-    'Copies and pastes TT FTE information to blank sheet
-    Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy                    'Copies data for transfer
-    Sheets(exportSheet).Activate
-    Cells(pasteLoc, 1).PasteSpecial Paste:=xlPasteValuesAndNumberFormats, _
-        Operation:=xlNone, SkipBlanks:=False, Transpose:=False                 'Pastes data to blank sheet
-    Cells(pasteLoc, 1).FormulaR1C1 = "TT Cost Contingency"                     'Renames "Labor" to "TT Cost Contingency"
-    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
-    Call SetTopBorder(pasteLoc)
-    pasteLoc = pasteLoc + rowCount
+    category = "TT Cost Contingency"
+    Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
     
     
     'Sets parameters for SS data copy
@@ -90,56 +68,24 @@ Sub Export_Macro()
     ssRC = rowCount
 
     'SS FTE data copy
-    Sheets(inputSheet).Activate                                                'initializes macro at "FTE Input" sheet
-    'Copies and pastes TT FTE information to blank sheet
-    Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy                    'Copies data for transfer
-    Sheets(exportSheet).Activate
-    Cells(pasteLoc, 1).PasteSpecial Paste:=xlPasteValuesAndNumberFormats, _
-        Operation:=xlNone, SkipBlanks:=False, Transpose:=False                 'Pastes data to blank sheet
-    Cells(pasteLoc, 1).FormulaR1C1 = "SS FTE"                                  'Renames "Labor" to "SS FTE"
-    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
-    Call SetTopBorder(pasteLoc)
-    pasteLoc = pasteLoc + rowCount
+    category = "SS FTE"
+    Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
 
     'SS Base Labor Cost data copy
-    Sheets(inputSheet).Activate                                                'initializes macro at "FTE Input" sheet
-    'Copies and pastes TT FTE information to blank sheet
-    Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy                    'Copies data for transfer
-    Sheets(exportSheet).Activate
-    Cells(pasteLoc, 1).PasteSpecial Paste:=xlPasteValuesAndNumberFormats, _
-        Operation:=xlNone, SkipBlanks:=False, Transpose:=False                 'Pastes data to blank sheet
-    Cells(pasteLoc, 1).FormulaR1C1 = "SS Base Labor Cost"                       'Renames "Labor" to "SS Base Labor Cost"
-    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
-    Call SetTopBorder(pasteLoc)
-    pasteLoc = pasteLoc + rowCount
+    category = "SS Base Labor Cost"
+    Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
 
     'SS Cost COLA data copy
-    Sheets(inputSheet).Activate                                                'initializes macro at "FTE Input" sheet
-    'Copies and pastes TT FTE information to blank sheet
-    Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy                    'Copies data for transfer
-    Sheets(exportSheet).Activate
-    Cells(pasteLoc, 1).PasteSpecial Paste:=xlPasteValuesAndNumberFormats, _
-        Operation:=xlNone, SkipBlanks:=False, Transpose:=False                 'Pastes data to blank sheet
-    Cells(pasteLoc, 1).FormulaR1C1 = "SS Cost COLA"                             'Renames "Labor" to "SS Cost COLA"
-    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
-    Call SetTopBorder(pasteLoc)
-    pasteLoc = pasteLoc + rowCount
+    category = "SS Cost COLA"
+    Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
 
     'SS Cost Contingency data copy
-    Sheets(inputSheet).Activate                                                'initializes macro at "FTE Input" sheet
-    'Copies and pastes TT FTE information to blank sheet
-    Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy                    'Copies data for transfer
-    Sheets(exportSheet).Activate
-    Cells(pasteLoc, 1).PasteSpecial Paste:=xlPasteValuesAndNumberFormats, _
-        Operation:=xlNone, SkipBlanks:=False, Transpose:=False                 'Pastes data to blank sheet
-    Cells(pasteLoc, 1).FormulaR1C1 = "SS Cost Contingency"                      'Renames "Labor" to "SS Cost Contingency"
-    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
-    Call SetTopBorder(pasteLoc)
-    pasteLoc = pasteLoc + rowCount
+    category = "SS Cost Contingency"
+    Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
+    
     'Saves start of "Other Input" for billing info move
     Dim otherIn As Integer
     otherIn = pasteLoc
-    
     
     'Sets parameters for Travel data copy
     inputSheet = "Other Input"
@@ -153,16 +99,8 @@ Sub Export_Macro()
     travelRC = rowCount
     
     'Travel Cost data copy
-    Sheets(inputSheet).Activate                                                'initializes macro at "Other Input" sheet
-    'Copies and pastes TT FTE information to blank sheet
-    Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy                    'Copies data for transfer
-    Sheets(exportSheet).Activate
-    Cells(pasteLoc, 1).PasteSpecial Paste:=xlPasteValuesAndNumberFormats, _
-        Operation:=xlNone, SkipBlanks:=False, Transpose:=False                 'Pastes data to blank sheet
-    Cells(pasteLoc, 1).FormulaR1C1 = "Travel Cost"                                'Renames "Travel" to "Travel Cost"
-    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
-    Call SetTopBorder(pasteLoc)
-    pasteLoc = pasteLoc + rowCount
+    category = "Travel Cost"
+    Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
     
     'Sets parameters for Other data copy
     copyStart = 21
@@ -175,16 +113,8 @@ Sub Export_Macro()
     otherRC = rowCount
     
     'Other Cost data copy
-    Sheets(inputSheet).Activate                                                'initializes macro at "Other Input" sheet
-    'Copies and pastes TT FTE information to blank sheet
-    Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy                    'Copies data for transfer
-    Sheets(exportSheet).Activate
-    Cells(pasteLoc, 1).PasteSpecial Paste:=xlPasteValuesAndNumberFormats, _
-        Operation:=xlNone, SkipBlanks:=False, Transpose:=False                 'Pastes data to blank sheet
-    Cells(pasteLoc, 1).FormulaR1C1 = "Other Cost"                              'Renames "Other" to "Other Cost"
-    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
-    Call SetTopBorder(pasteLoc)
-    pasteLoc = pasteLoc + rowCount
+    category = "Other Cost"
+    Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
     
     'Sets parameters for HW/SW data copy
     copyStart = 34
@@ -197,16 +127,8 @@ Sub Export_Macro()
     hwswRC = rowCount
     
     'HW/SW Cost data copy
-    Sheets(inputSheet).Activate                                                'initializes macro at "Other Input" sheet
-    'Copies and pastes TT FTE information to blank sheet
-    Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy                    'Copies data for transfer
-    Sheets(exportSheet).Activate
-    Cells(pasteLoc, 1).PasteSpecial Paste:=xlPasteValuesAndNumberFormats, _
-        Operation:=xlNone, SkipBlanks:=False, Transpose:=False                 'Pastes data to blank sheet
-    Cells(pasteLoc, 1).FormulaR1C1 = "HW/SW Cost"                              'Renames "HW/SW" to "HW/SW Cost"
-    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
-    Call SetTopBorder(pasteLoc)
-    pasteLoc = pasteLoc + rowCount
+    category = "HW/SW Cost"
+    Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
     
     'Inserts "LOB" column
     Columns("E:E").Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
@@ -318,4 +240,22 @@ Sub GetRowCount(inputSheet, curRow, rowCount)
         rowCount = rowCount + 1
         curRow = curRow + 1
     Wend
+End Sub
+
+Sub GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
+' File name: GetData
+' Author: Erin Payne
+' Desctiption: Copys, pastes, and renames input data for export
+
+    Sheets(inputSheet).Activate                                                'initializes macro at input sheet
+    'Copies and pastes information to blank sheet
+    Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy                    'Copies data for transfer
+    Sheets(exportSheet).Activate
+    Cells(pasteLoc, 1).PasteSpecial Paste:=xlPasteValuesAndNumberFormats, _
+        Operation:=xlNone, SkipBlanks:=False, Transpose:=False                 'Pastes data to blank sheet
+    Cells(pasteLoc, 1).FormulaR1C1 = category                                  'Renames cateogry title
+    Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
+    Call SetTopBorder(pasteLoc)
+    pasteLoc = pasteLoc + rowCount
+
 End Sub
