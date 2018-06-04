@@ -1,8 +1,10 @@
-Sub Test_Macro()
-' File name: Test_Macro Macro
+Sub Export_Test()
+' File name: Export_Test Macro
 ' Author: Erin Payne
 ' Description: Final test file for additional data export.
 
+    Rows.EntireRow.Hidden = False '******FOR TESTING ONLY*************
+    
     Dim rowCount As Integer 'Row count of TT data
     rowCount = 0
     
@@ -292,4 +294,14 @@ Sub Test_Macro()
     'Moves Other Input Shore information to column H for unity
     Sheets("Blank Sheet 2").Range(Cells(otherIn, 9), Cells(pasteLoc - 1, 9)).Cut Range(Cells(otherIn, 8), Cells(pasteLoc - 1, 8))
     Application.CutCopyMode = False
+    
+    'Hides blank rows of sheet
+    Dim rng As Range
+    For Each rng In Range(Cells(2, 3), Cells(pasteLoc - 1, 3))
+        If rng.Value = "" Then
+            rng.EntireRow.Hidden = True
+        Else
+            rng.EntireRow.Hidden = False
+        End If
+    Next rng
 End Sub
