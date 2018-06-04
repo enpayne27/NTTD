@@ -216,7 +216,7 @@ Sub Export_Macro()
     Next rng
     
     'Autofits column size for legibility
-    Columns("E:T").EntireColumn.AutoFit
+    Columns("E:EH").EntireColumn.AutoFit
 End Sub
 
 Sub SetTopBorder(pasteLoc)
