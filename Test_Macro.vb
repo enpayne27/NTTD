@@ -3,7 +3,7 @@ Sub Export_Macro()
 ' Author: Erin Payne
 ' Description: File for additional data export.
 
-    Rows.EntireRow.Hidden = False '******FOR TESTING ONLY*************
+    Sheets("Blank Sheet 2").Range("A1:EH200").Clear '******FOR TESTING ONLY*************
     
     Dim rowCount As Integer 'Row count of TT data
     rowCount = 0
@@ -26,7 +26,7 @@ Sub Export_Macro()
     
     'Counts row size of TT data
     Call GetRowCount(inputSheet, curRow, rowCount)
-    Dim ttRC As Integer
+    Dim ttRC As Integer 'TT row count
     ttRC = rowCount
     
     'TT FTE data copy
@@ -64,7 +64,7 @@ Sub Export_Macro()
 
     'Counts row size of SS data
     Call GetRowCount(inputSheet, curRow, rowCount)
-    Dim ssRC As Integer
+    Dim ssRC As Integer 'SS row count
     ssRC = rowCount
 
     'SS FTE data copy
@@ -84,7 +84,7 @@ Sub Export_Macro()
     Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
     
     'Saves start of "Other Input" for billing info move
-    Dim otherIn As Integer
+    Dim otherIn As Integer 'Starting position of "Other Input"
     otherIn = pasteLoc
     
     'Sets parameters for Travel data copy
@@ -95,7 +95,7 @@ Sub Export_Macro()
 
     'Counts row size of Travel data
     Call GetRowCount(inputSheet, curRow, rowCount)
-    Dim travelRC As Integer
+    Dim travelRC As Integer 'Travel row count
     travelRC = rowCount
     
     'Travel Cost data copy
@@ -109,7 +109,7 @@ Sub Export_Macro()
 
     'Counts row size of Other data
     Call GetRowCount(inputSheet, curRow, rowCount)
-    Dim otherRC As Integer
+    Dim otherRC As Integer 'Other row count
     otherRC = rowCount
     
     'Other Cost data copy
@@ -123,7 +123,7 @@ Sub Export_Macro()
 
     'Counts row size of HW/SW data
     Call GetRowCount(inputSheet, curRow, rowCount)
-    Dim hwswRC As Integer
+    Dim hwswRC As Integer 'HW/SW row count
     hwswRC = rowCount
     
     'HW/SW Cost data copy
@@ -141,9 +141,9 @@ Sub Export_Macro()
     Sheets(exportSheet).Range(Cells(otherIn, 18), Cells(pasteLoc - 1, 18)).Cut Range(Cells(otherIn, 2), Cells(pasteLoc - 1, 2))
     Application.CutCopyMode = False
     
-    Dim copyCol As Integer
-    Dim pasteCol As Integer
-    Dim RC As Integer
+    Dim copyCol As Integer 'Column letter for data copy
+    Dim pasteCol As Integer 'Column letter for data paste
+    Dim RC As Integer 'Row count of data being transferred
     
     'Sets parameters for TT "LOB" information
     inputSheet = "FTE Input"
@@ -184,22 +184,38 @@ Sub Export_Macro()
     Sheets(exportSheet).Range(Cells(otherIn, 9), Cells(pasteLoc - 1, 9)).Cut Range(Cells(otherIn, 8), Cells(pasteLoc - 1, 8))
     Application.CutCopyMode = False
     
-    'Hides blank rows of sheet
-    Dim rng As Range
-    For Each rng In Range(Cells(2, 3), Cells(pasteLoc - 1, 3))
-        If rng.Value = "" Then
-            rng.EntireRow.Hidden = True
-        Else
-            rng.EntireRow.Hidden = False
-        End If
-    Next rng
+    'Calculates monthly costs
+    copyStart = 9
+    curRow = 2
+    RC = ttRC + curRow
+    Call GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
     
+    copyStart = 9
+    Call GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
+    
+    copyStart = 9
+    Call GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
+    
+    copyStart = 9
+    Call GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
+
+    
+'    'Hides blank rows of sheet
+'    Dim rng As Range
+'    For Each rng In Range(Cells(2, 3), Cells(pasteLoc - 1, 3))
+'        If rng.Value = "" Then
+'            rng.EntireRow.Hidden = True
+'        Else
+'            rng.EntireRow.Hidden = False
+'        End If
+'    Next rng
+
     'Autofits column size for legibility
     Columns("E:EH").EntireColumn.AutoFit
 End Sub
 
 Sub SetTopBorder(pasteLoc)
-' File name: Set_Top_Border Macro
+' Sub name: SetTopBorder Macro
 ' Author: Erin Payne
 ' Description: Sets a thin top border to any cell.
 
@@ -211,7 +227,7 @@ Sub SetTopBorder(pasteLoc)
 End Sub
 
 Sub GetRowCount(inputSheet, curRow, rowCount)
-' File name: GetRowCount
+' Sub name: GetRowCount
 ' Author: Erin Payne
 ' Description: Gets row count for any range of rows.
 
@@ -222,7 +238,7 @@ Sub GetRowCount(inputSheet, curRow, rowCount)
 End Sub
 
 Sub GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
-' File name: GetData
+' Sub name: GetData
 ' Author: Erin Payne
 ' Desctiption: Copys, pastes, and renames input data for export
 
@@ -240,9 +256,10 @@ Sub GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, cate
 End Sub
 
 Sub GetNewData(inputSheet, exportSheet, copyStart, RC, copyCol, pasteCol, curRow)
-' File name: GetNewData
+' Sub name: GetNewData
 ' Author: Erin Payne
 ' Desctiption: Copys, pastes, and renames LOB and Shore data for export
+
     Dim i As Integer
     For i = 1 To 4
             Sheets(inputSheet).Activate
@@ -252,5 +269,36 @@ Sub GetNewData(inputSheet, exportSheet, copyStart, RC, copyCol, pasteCol, curRow
                 Paste:=xlPasteValuesAndNumberFormats, Operation:= _
                 xlNone, SkipBlanks:=False, Transpose:=False                            'Pastes data to blank sheet
             curRow = curRow + RC                                                       'Increments current row
+    Next i
+End Sub
+
+Sub GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
+'Calculates monthly costs
+' Sub name: GetCost
+' Author: Erin Payne
+' Desctiption: Calculates monthly costs
+
+    Dim ans As Long
+    Dim x As Integer
+    Dim y As Integer
+    Dim z As Integer
+    Dim i As Integer
+    Dim j As Integer
+    For i = 21 To 26 'Columns '*************Change month end value************
+        For j = curRow To RC 'Rows
+            If Sheets(exportSheet).Cells(j, i).Value <> "" Then
+                x = Sheets(inputSheet).Cells(copyStart, 19).Value
+                y = Sheets(inputSheet).Cells(copyStart, 153).Value
+                z = Sheets(inputSheet).Cells(copyStart, 166).Value
+                ans = x * y
+                ans = ans * z
+                Sheets(exportSheet).Cells(j, i).Value = ans
+                Cells(j, i).Style = "Currency"
+                copyStart = copyStart + 1
+                curRow = curRow + 1
+            Else
+                copyStart = copyStart + 1
+            End If
+        Next j
     Next i
 End Sub
