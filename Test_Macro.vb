@@ -32,7 +32,7 @@ Sub Export_Macro()
     'TT FTE data copy
     Sheets(inputSheet).Activate                                                'initializes macro at "FTE Input" sheet
     'Copies and pastes TT FTE information to blank sheet
-    Sheets(inputSheet).Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy 'Copies TT data for transfer
+    Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy                    'Copies TT data for transfer
     Sheets(exportSheet).Activate                                               'initializes macro at "Blank Sheet 2" for pasting
     Range("A1").PasteSpecial _
         Paste:=xlPasteValuesAndNumberFormats, Operation:=xlNone, _
@@ -141,34 +141,25 @@ Sub Export_Macro()
     Sheets(exportSheet).Range(Cells(otherIn, 18), Cells(pasteLoc - 1, 18)).Cut Range(Cells(otherIn, 2), Cells(pasteLoc - 1, 2))
     Application.CutCopyMode = False
     
+    Dim copyCol As Integer
+    Dim pasteCol As Integer
+    Dim RC As Integer
+    
     'Sets parameters for TT "LOB" information
     inputSheet = "FTE Input"
     copyStart = 9
     curRow = 2
+    copyCol = 164
+    pasteCol = 5
+    RC = ttRC
     'TT LOB data copy
-    Dim i As Integer
-    For i = 1 To 4
-        Sheets(inputSheet).Activate
-        Range(Cells(copyStart, 164), Cells(copyStart + ttRC - 1, 164)).Copy  'Copies data for transfer
-        Sheets(exportSheet).Activate
-        Range(Cells(curRow, 5), Cells(curRow + ttRC - 1, 5)).PasteSpecial _
-            Paste:=xlPasteValuesAndNumberFormats, Operation:= _
-            xlNone, SkipBlanks:=False, Transpose:=False                      'Pastes data to blank sheet
-        curRow = curRow + ttRC                                               'Increments current row
-    Next i
+    Call GetNewData(inputSheet, exportSheet, copyStart, RC, copyCol, pasteCol, curRow)
     
     'Sets parameters for SS "LOB" information
     copyStart = 32
+    RC = ssRC
     'SS LOB data copy
-    For i = 1 To 4
-        Sheets(inputSheet).Activate
-        Range(Cells(copyStart, 164), Cells(copyStart + ssRC - 1, 164)).Copy  'Copies data for transfer
-        Sheets(exportSheet).Activate
-        Range(Cells(curRow, 5), Cells(curRow + ssRC - 1, 5)).PasteSpecial _
-            Paste:=xlPasteValuesAndNumberFormats, Operation:= _
-            xlNone, SkipBlanks:=False, Transpose:=False                      'Pastes data to blank sheet
-        curRow = curRow + ssRC                                               'Increments current row
-    Next i
+    Call GetNewData(inputSheet, exportSheet, copyStart, RC, copyCol, pasteCol, curRow)
     
     'Moves Other Input LOB information to column E for unity
     Sheets(exportSheet).Range(Cells(otherIn, 10), Cells(pasteLoc - 1, 10)).Cut Range(Cells(otherIn, 5), Cells(pasteLoc - 1, 5))
@@ -177,29 +168,17 @@ Sub Export_Macro()
     'Sets parameters for TT "Shore" information
     copyStart = 9
     curRow = 2
+    copyCol = 163
+    pasteCol = 8
+    RC = ttRC
     'TT LOB data copy
-    For i = 1 To 4
-        Sheets(inputSheet).Activate
-        Range(Cells(copyStart, 163), Cells(copyStart + ttRC - 1, 163)).Copy 'Copies data for transfer
-        Sheets(exportSheet).Activate
-        Range(Cells(curRow, 8), Cells(curRow + ttRC - 1, 8)).PasteSpecial _
-            Paste:=xlPasteValuesAndNumberFormats, Operation:= _
-            xlNone, SkipBlanks:=False, Transpose:=False                     'Pastes data to blank sheet
-        curRow = curRow + ttRC                                              'Increments current row
-    Next i
+    Call GetNewData(inputSheet, exportSheet, copyStart, RC, copyCol, pasteCol, curRow)
     
     'Sets parameters for SS "Shore" information
     copyStart = 32
+    RC = ssRC
     'SS LOB data copy
-    For i = 1 To 4
-        Sheets(inputSheet).Activate
-        Range(Cells(copyStart, 163), Cells(copyStart + ssRC - 1, 163)).Copy  'Copies data for transfer
-        Sheets(exportSheet).Activate
-        Range(Cells(curRow, 8), Cells(curRow + ssRC - 1, 8)).PasteSpecial _
-            Paste:=xlPasteValuesAndNumberFormats, Operation:= _
-            xlNone, SkipBlanks:=False, Transpose:=False                      'Pastes data to blank sheet
-        curRow = curRow + ssRC                                               'Increments current row
-    Next i
+    Call GetNewData(inputSheet, exportSheet, copyStart, RC, copyCol, pasteCol, curRow)
 
     'Moves Other Input Shore information to column H for unity
     Sheets(exportSheet).Range(Cells(otherIn, 9), Cells(pasteLoc - 1, 9)).Cut Range(Cells(otherIn, 8), Cells(pasteLoc - 1, 8))
@@ -258,4 +237,20 @@ Sub GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, cate
     Call SetTopBorder(pasteLoc)
     pasteLoc = pasteLoc + rowCount
 
+End Sub
+
+Sub GetNewData(inputSheet, exportSheet, copyStart, RC, copyCol, pasteCol, curRow)
+' File name: GetNewData
+' Author: Erin Payne
+' Desctiption: Copys, pastes, and renames LOB and Shore data for export
+    Dim i As Integer
+    For i = 1 To 4
+            Sheets(inputSheet).Activate
+            Range(Cells(copyStart, copyCol), Cells(copyStart + RC - 1, copyCol)).Copy  'Copies data for transfer
+            Sheets(exportSheet).Activate
+            Range(Cells(curRow, pasteCol), Cells(curRow + RC - 1, pasteCol)).PasteSpecial _
+                Paste:=xlPasteValuesAndNumberFormats, Operation:= _
+                xlNone, SkipBlanks:=False, Transpose:=False                            'Pastes data to blank sheet
+            curRow = curRow + RC                                                       'Increments current row
+    Next i
 End Sub
