@@ -187,17 +187,22 @@ Sub Export_Macro()
     'Calculates monthly costs
     copyStart = 9
     curRow = 2
-    RC = ttRC + curRow
+    RC = ttRC + curRow - 1
     Call GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
-    
+
     copyStart = 9
+    curRow = curRow + ttRC
+    RC = ttRC + curRow - 1
     Call GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
-    
-    copyStart = 9
-    Call GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
-    
-    copyStart = 9
-    Call GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
+
+'    copyStart = 9
+'    curRow = curRow + ttRC
+'    RC = ttRC + curRow - 1
+'    Call GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
+'
+'    copyStart = 9
+'    curRow = 2
+'    Call GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
 
     
 '    'Hides blank rows of sheet
@@ -279,26 +284,26 @@ Sub GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
 ' Desctiption: Calculates monthly costs
 
     Dim ans As Long
-    Dim x As Integer
-    Dim y As Integer
-    Dim z As Integer
+    Dim x As Long
+    Dim y As Long
+    Dim z As Long
     Dim i As Integer
     Dim j As Integer
     For i = 21 To 26 'Columns '*************Change month end value************
         For j = curRow To RC 'Rows
             If Sheets(exportSheet).Cells(j, i).Value <> "" Then
-                x = Sheets(inputSheet).Cells(copyStart, 19).Value
-                y = Sheets(inputSheet).Cells(copyStart, 153).Value
-                z = Sheets(inputSheet).Cells(copyStart, 166).Value
+                x = Sheets(inputSheet).Cells(copyStart, 19).Value 'S
+                y = Sheets(inputSheet).Cells(copyStart, 153).Value 'EW
+                z = Sheets(inputSheet).Cells(copyStart, 166).Value 'FJ
                 ans = x * y
                 ans = ans * z
                 Sheets(exportSheet).Cells(j, i).Value = ans
                 Cells(j, i).Style = "Currency"
                 copyStart = copyStart + 1
-                curRow = curRow + 1
-            Else
+            Else 'If blank
                 copyStart = copyStart + 1
             End If
         Next j
+        copyStart = 9
     Next i
 End Sub
