@@ -186,7 +186,7 @@ Sub Export_Macro()
     
     'Calculates monthly costs
     copyStart = 9
-    curRow = 2
+    curRow = curRow + ttRC
     RC = ttRC + curRow - 1
     Call GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
 
@@ -194,16 +194,19 @@ Sub Export_Macro()
     curRow = curRow + ttRC
     RC = ttRC + curRow - 1
     Call GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
+    
+'    Range("B3:E8").Select
+'    Application.Goto Reference:="HC"
+'    Range("H3:H8").Select
+'    Application.Goto Reference:="Rate"
+'    Range("J3:J8").Select
+'    Application.Goto Reference:="Hours"
+'    Range("B11:E16").Select
+'    Selection.FormulaArray = "=HC*Rate*Hours"
 
-'    copyStart = 9
-'    curRow = curRow + ttRC
-'    RC = ttRC + curRow - 1
-'    Call GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
-'
-'    copyStart = 9
-'    curRow = 2
-'    Call GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
-
+    Range("S9:X21").Application.Goto Reference:="HC"
+    Range("EW9:EW21").Application.Goto Reference:="Rate"
+    Range("FJ9:FJ21").Application.Gotot Reference:="Hours"
     
 '    'Hides blank rows of sheet
 '    Dim rng As Range
@@ -283,27 +286,27 @@ Sub GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
 ' Author: Erin Payne
 ' Desctiption: Calculates monthly costs
 
-    Dim ans As Long
-    Dim x As Long
-    Dim y As Long
-    Dim z As Long
+    Dim ans As Range
+    Dim x As Range
+    Dim y As Range
+    Dim z As Range
     Dim i As Integer
     Dim j As Integer
-    For i = 21 To 26 'Columns '*************Change month end value************
-        For j = curRow To RC 'Rows
-            If Sheets(exportSheet).Cells(j, i).Value <> "" Then
-                x = Sheets(inputSheet).Cells(copyStart, 19).Value 'S
-                y = Sheets(inputSheet).Cells(copyStart, 153).Value 'EW
-                z = Sheets(inputSheet).Cells(copyStart, 166).Value 'FJ
+'    For i = 21 To 26 'Columns '*************Change month end value************
+'        For j = curRow To RC 'Rows
+'            If Sheets(exportSheet).Cells(j, i).Value <> "" Then
+                x = Sheets(inputSheet).Range(Cells(9, 19), Cells(21, 54)).Value 'S
+                y = Sheets(inputSheet).Range(Cells(9, 153), Cells(21, 153)).Value 'EW
+                z = Sheets(inputSheet).Range(Cells(9, 166), Cells(21, 166)).Value 'FJ
                 ans = x * y
                 ans = ans * z
-                Sheets(exportSheet).Cells(j, i).Value = ans
-                Cells(j, i).Style = "Currency"
-                copyStart = copyStart + 1
-            Else 'If blank
-                copyStart = copyStart + 1
-            End If
-        Next j
-        copyStart = 9
-    Next i
+                Sheets(exportSheet).Range(Cells(2, 21), Cells(14, 56)).Value = ans
+                Range(Cells(2, 21), Cells(14, 56)).Style = "Currency"
+'                copyStart = copyStart + 1
+'            Else 'If blank
+'                copyStart = copyStart + 1
+'            End If
+'        Next j
+'        copyStart = 9
+'    Next i
 End Sub
