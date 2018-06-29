@@ -3,7 +3,7 @@ Sub Export_Macro()
 ' Author: Erin Payne
 ' Description: File for additional data export.
 
-    Sheets("Blank Sheet 2").Range("A1:EH200").Clear '******FOR TESTING ONLY*************
+    Sheets("Blank Sheet 2").Range("A1:EH200").Clear
     
     Dim rowCount As Integer 'Row count of TT data
     rowCount = 0
@@ -26,7 +26,7 @@ Sub Export_Macro()
     
     'Counts row size of TT data
     Call GetRowCount(inputSheet, curRow, rowCount)
-    Dim ttRC As Integer 'TT row count
+    Dim ttRC As Integer
     ttRC = rowCount
     
     'TT FTE data copy
@@ -64,7 +64,7 @@ Sub Export_Macro()
 
     'Counts row size of SS data
     Call GetRowCount(inputSheet, curRow, rowCount)
-    Dim ssRC As Integer 'SS row count
+    Dim ssRC As Integer
     ssRC = rowCount
 
     'SS FTE data copy
@@ -84,7 +84,7 @@ Sub Export_Macro()
     Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
     
     'Saves start of "Other Input" for billing info move
-    Dim otherIn As Integer 'Starting position of "Other Input"
+    Dim otherIn As Integer
     otherIn = pasteLoc
     
     'Sets parameters for Travel data copy
@@ -95,7 +95,7 @@ Sub Export_Macro()
 
     'Counts row size of Travel data
     Call GetRowCount(inputSheet, curRow, rowCount)
-    Dim travelRC As Integer 'Travel row count
+    Dim travelRC As Integer
     travelRC = rowCount
     
     'Travel Cost data copy
@@ -109,7 +109,7 @@ Sub Export_Macro()
 
     'Counts row size of Other data
     Call GetRowCount(inputSheet, curRow, rowCount)
-    Dim otherRC As Integer 'Other row count
+    Dim otherRC As Integer
     otherRC = rowCount
     
     'Other Cost data copy
@@ -123,7 +123,7 @@ Sub Export_Macro()
 
     'Counts row size of HW/SW data
     Call GetRowCount(inputSheet, curRow, rowCount)
-    Dim hwswRC As Integer 'HW/SW row count
+    Dim hwswRC As Integer
     hwswRC = rowCount
     
     'HW/SW Cost data copy
@@ -141,9 +141,9 @@ Sub Export_Macro()
     Sheets(exportSheet).Range(Cells(otherIn, 18), Cells(pasteLoc - 1, 18)).Cut Range(Cells(otherIn, 2), Cells(pasteLoc - 1, 2))
     Application.CutCopyMode = False
     
-    Dim copyCol As Integer 'Column letter for data copy
-    Dim pasteCol As Integer 'Column letter for data paste
-    Dim RC As Integer 'Row count of data being transferred
+    Dim copyCol As Integer
+    Dim pasteCol As Integer
+    Dim RC As Integer
     
     'Sets parameters for TT "LOB" information
     inputSheet = "FTE Input"
@@ -184,46 +184,22 @@ Sub Export_Macro()
     Sheets(exportSheet).Range(Cells(otherIn, 9), Cells(pasteLoc - 1, 9)).Cut Range(Cells(otherIn, 8), Cells(pasteLoc - 1, 8))
     Application.CutCopyMode = False
     
-    'Calculates monthly costs
-    copyStart = 9
-    curRow = curRow + ttRC
-    RC = ttRC + curRow - 1
-    Call GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
-
-    copyStart = 9
-    curRow = curRow + ttRC
-    RC = ttRC + curRow - 1
-    Call GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
+    'Hides blank rows of sheet
+    Dim rng As Range
+    For Each rng In Range(Cells(2, 3), Cells(pasteLoc - 1, 3))
+        If rng.Value = "" Then
+            rng.EntireRow.Hidden = True
+        Else
+            rng.EntireRow.Hidden = False
+        End If
+    Next rng
     
-'    Range("B3:E8").Select
-'    Application.Goto Reference:="HC"
-'    Range("H3:H8").Select
-'    Application.Goto Reference:="Rate"
-'    Range("J3:J8").Select
-'    Application.Goto Reference:="Hours"
-'    Range("B11:E16").Select
-'    Selection.FormulaArray = "=HC*Rate*Hours"
-
-    Range("S9:X21").Application.Goto Reference:="HC"
-    Range("EW9:EW21").Application.Goto Reference:="Rate"
-    Range("FJ9:FJ21").Application.Gotot Reference:="Hours"
-    
-'    'Hides blank rows of sheet
-'    Dim rng As Range
-'    For Each rng In Range(Cells(2, 3), Cells(pasteLoc - 1, 3))
-'        If rng.Value = "" Then
-'            rng.EntireRow.Hidden = True
-'        Else
-'            rng.EntireRow.Hidden = False
-'        End If
-'    Next rng
-
     'Autofits column size for legibility
     Columns("E:EH").EntireColumn.AutoFit
 End Sub
 
 Sub SetTopBorder(pasteLoc)
-' Sub name: SetTopBorder Macro
+' File name: Set_Top_Border Macro
 ' Author: Erin Payne
 ' Description: Sets a thin top border to any cell.
 
@@ -235,7 +211,7 @@ Sub SetTopBorder(pasteLoc)
 End Sub
 
 Sub GetRowCount(inputSheet, curRow, rowCount)
-' Sub name: GetRowCount
+' File name: GetRowCount
 ' Author: Erin Payne
 ' Description: Gets row count for any range of rows.
 
@@ -246,9 +222,9 @@ Sub GetRowCount(inputSheet, curRow, rowCount)
 End Sub
 
 Sub GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
-' Sub name: GetData
+' File name: GetData
 ' Author: Erin Payne
-' Desctiption: Copys, pastes, and renames input data for export
+' Description: Copys, pastes, and renames input data for export
 
     Sheets(inputSheet).Activate                                                'initializes macro at input sheet
     'Copies and pastes information to blank sheet
@@ -264,10 +240,9 @@ Sub GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, cate
 End Sub
 
 Sub GetNewData(inputSheet, exportSheet, copyStart, RC, copyCol, pasteCol, curRow)
-' Sub name: GetNewData
+' File name: GetNewData
 ' Author: Erin Payne
-' Desctiption: Copys, pastes, and renames LOB and Shore data for export
-
+' Description: Copys, pastes, and renames LOB and Shore data for export
     Dim i As Integer
     For i = 1 To 4
             Sheets(inputSheet).Activate
@@ -284,29 +259,7 @@ Sub GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
 'Calculates monthly costs
 ' Sub name: GetCost
 ' Author: Erin Payne
-' Desctiption: Calculates monthly costs
+' Description: Calculates monthly costs
 
-    Dim ans As Range
-    Dim x As Range
-    Dim y As Range
-    Dim z As Range
-    Dim i As Integer
-    Dim j As Integer
-'    For i = 21 To 26 'Columns '*************Change month end value************
-'        For j = curRow To RC 'Rows
-'            If Sheets(exportSheet).Cells(j, i).Value <> "" Then
-                x = Sheets(inputSheet).Range(Cells(9, 19), Cells(21, 54)).Value 'S
-                y = Sheets(inputSheet).Range(Cells(9, 153), Cells(21, 153)).Value 'EW
-                z = Sheets(inputSheet).Range(Cells(9, 166), Cells(21, 166)).Value 'FJ
-                ans = x * y
-                ans = ans * z
-                Sheets(exportSheet).Range(Cells(2, 21), Cells(14, 56)).Value = ans
-                Range(Cells(2, 21), Cells(14, 56)).Style = "Currency"
-'                copyStart = copyStart + 1
-'            Else 'If blank
-'                copyStart = copyStart + 1
-'            End If
-'        Next j
-'        copyStart = 9
-'    Next i
+
 End Sub
