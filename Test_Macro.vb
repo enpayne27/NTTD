@@ -2,133 +2,120 @@ Sub Export_Macro()
 ' File name: Export_Test Macro
 ' Author: Erin Payne
 ' Description: File for additional data export.
-
-    Sheets("Blank Sheet 2").Range("A1:EH200").Clear
     
-    Dim rowCount As Integer 'Row count of TT data
-    rowCount = 0
-    
-    Dim copyStart As Integer 'Cell to start copy
-    copyStart = 8
-    
-    Dim pasteLoc As Integer 'Cell to start paste
-    
-    Dim curRow As Integer 'Current cell of data being copied
-    curRow = 9
-    
-    Dim inputSheet As String 'Sheet copying input from
+    'Sheet copying input from
+    Dim inputSheet As String
     inputSheet = "FTE Input"
     
-    Dim exportSheet As String 'Sheet pasting input to
+    'Sheet pasting input to
+    Dim exportSheet As String
     exportSheet = "Blank Sheet 2"
     
-    Dim category As String 'Category title of data inputted
+    Sheets(exportSheet).Cells.Clear 'Clears any previous data inputted on exportSheet
+    Rows.EntireRow.Hidden = False
     
-    'Counts row size of TT data
-    Call GetRowCount(inputSheet, curRow, rowCount)
-    Dim ttRC As Integer
-    ttRC = rowCount
+    'Initializes all variables used from Name Manager
+    HWInp_FirstRow = Int(Right(ActiveWorkbook.Names("HWInp_FirstRow"), 3))  'Takes row number from formula and converts to equivalent integer
+    HWInp_MaxRow = Application.Evaluate("HWInp_MaxRow")                     'Takes total number of rows for given section
+    OthInp_FirstRow = Int(Right(ActiveWorkbook.Names("OthInp_FirstRow"), 3))
+    OthInp_MaxRow = Application.Evaluate("OthInp_MaxRow")
+    SSInp_FirstRow = Int(Right(ActiveWorkbook.Names("SSInp_FirstRow"), 3))
+    SSInp_MaxRow = Application.Evaluate("SSInp_MaxRow")
+    TTInp_FirstRow = Int(Right(ActiveWorkbook.Names("TTInp_FirstRow"), 2))
+    TTInp_MaxRow = Application.Evaluate("TTInp_MaxRow")
+    TVLInp_FirstRow = Int(Right(ActiveWorkbook.Names("TVLInp_FirstRow"), 2))
+    TVLInp_MaxRow = Application.Evaluate("TVLInp_MaxRow")
+    termLength = Application.Evaluate("TermLength")
+    
+    'Row count of data being transferred
+    Dim rowCount As Integer
+    rowCount = TTInp_MaxRow 'Sets row size to TT row count for first copy
+    
+    'Cell row to start copy on import sheet
+    Dim copyStart As Integer
+    copyStart = TTInp_FirstRow
+    
+    'Cell row to start paste on export sheet
+    Dim pasteLoc As Integer
+    pasteLoc = 1
+    
+    'Category title of data inputted
+    Dim category As String
     
     'TT FTE data copy
-    Sheets(inputSheet).Activate                                                'initializes macro at "FTE Input" sheet
+    Sheets(inputSheet).Activate                                           'initializes macro at "FTE Input" sheet
     'Copies and pastes TT FTE information to blank sheet
-    Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy                    'Copies TT data for transfer
-    Sheets(exportSheet).Activate                                               'initializes macro at "Blank Sheet 2" for pasting
-    Range("A1").PasteSpecial _
+    Range(Cells(copyStart, 1), Cells(rowCount + copyStart, termLength)).Copy          'Copies TT data for transfer
+    Sheets(exportSheet).Activate                                          'initializes macro at "Blank Sheet 2" for pasting
+    Cells(pasteLoc, 1).PasteSpecial _
         Paste:=xlPasteValuesAndNumberFormats, Operation:=xlNone, _
-        SkipBlanks:=False, Transpose:=False                                    'Pastes data to blank sheet
-    Range("A1").FormulaR1C1 = "Category"                                       'Renames "Labor" heading to "Category"
-    Rows(1).Style = "Input Heading"                                            'Adds heading format to first row
-    Range("A2").FormulaR1C1 = "TT FTE"                                         'Renames "Labor" to "TT FTE"
-    Range("A2").AutoFill Destination:=Range(Cells(2, 1), Cells(rowCount + 1, 1)), Type:=xlFillDefault
-    copyStart = copyStart + 1
-    pasteLoc = rowCount + 2
+        SkipBlanks:=False, Transpose:=False                               'Pastes data to blank sheet
+    Cells(pasteLoc, 1).FormulaR1C1 = "Category"                           'Renames "Labor" heading to "Category"
+    Rows(pasteLoc).Style = "Input Heading"                                'Adds heading format to first row
+    Cells(pasteLoc + 1, 1).FormulaR1C1 = "TT FTE"                         'Renames "Labor" to "TT FTE"
+    Cells(pasteLoc + 1, 1).AutoFill Destination:=Range(Cells(pasteLoc + 1, 1), _
+        Cells(rowCount + 1, 1)), Type:=xlFillDefault
+    
+    copyStart = copyStart + 1 'Incremented by 1 to exclude heading line
+    pasteLoc = rowCount + 2   'Incremented by 1 to exclude heading line and begin on new line
     
     'TT Base Labor Cost data copy
     category = "TT Base Labor Cost"
-    Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
+    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
 
     'TT Cost COLA data copy
     category = "TT Cost COLA"
-    Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
+    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
 
     'TT Cost Contingency data copy
     category = "TT Cost Contingency"
-    Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
+    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
     
-    
-    'Sets parameters for SS data copy
-    copyStart = 32
-    curRow = 32
-    rowCount = 0
 
-    'Counts row size of SS data
-    Call GetRowCount(inputSheet, curRow, rowCount)
-    Dim ssRC As Integer
-    ssRC = rowCount
+    'Sets row size of SS data
+    rowCount = SSInp_MaxRow
+    copyStart = SSInp_FirstRow + 1 'Incremented by 1 to exclude heading line
 
     'SS FTE data copy
     category = "SS FTE"
-    Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
+    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
 
     'SS Base Labor Cost data copy
     category = "SS Base Labor Cost"
-    Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
+    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
 
     'SS Cost COLA data copy
     category = "SS Cost COLA"
-    Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
+    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
 
     'SS Cost Contingency data copy
     category = "SS Cost Contingency"
-    Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
+    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
     
-    'Saves start of "Other Input" for billing info move
+    'Saves start of "Other Input" in exportSheet for billing info move
     Dim otherIn As Integer
     otherIn = pasteLoc
     
-    'Sets parameters for Travel data copy
+    'Sets parameters for "Other" data copy
     inputSheet = "Other Input"
-    copyStart = 8
-    curRow = 8
-    rowCount = 0
 
-    'Counts row size of Travel data
-    Call GetRowCount(inputSheet, curRow, rowCount)
-    Dim travelRC As Integer
-    travelRC = rowCount
-    
     'Travel Cost data copy
+    rowCount = TVLInp_MaxRow
+    copyStart = TVLInp_FirstRow + 1
     category = "Travel Cost"
-    Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
-    
-    'Sets parameters for Other data copy
-    copyStart = 21
-    curRow = 21
-    rowCount = 0
+    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
 
-    'Counts row size of Other data
-    Call GetRowCount(inputSheet, curRow, rowCount)
-    Dim otherRC As Integer
-    otherRC = rowCount
-    
     'Other Cost data copy
+    rowCount = OthInp_MaxRow
+    copyStart = OthInp_FirstRow + 1
     category = "Other Cost"
-    Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
-    
-    'Sets parameters for HW/SW data copy
-    copyStart = 34
-    curRow = 34
-    rowCount = 0
-
-    'Counts row size of HW/SW data
-    Call GetRowCount(inputSheet, curRow, rowCount)
-    Dim hwswRC As Integer
-    hwswRC = rowCount
+    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
     
     'HW/SW Cost data copy
+    rowCount = HWInp_MaxRow
+    copyStart = HWInp_FirstRow + 1
     category = "HW/SW Cost"
-    Call GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
+    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
     
     'Inserts "LOB" column
     Columns("E:E").Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
@@ -139,7 +126,7 @@ Sub Export_Macro()
     
     'Moves Other Input billing information to column B for unity
     Sheets(exportSheet).Range(Cells(otherIn, 18), Cells(pasteLoc - 1, 18)).Cut Range(Cells(otherIn, 2), Cells(pasteLoc - 1, 2))
-    Application.CutCopyMode = False
+     Application.CutCopyMode = False
     
     Dim copyCol As Integer
     Dim pasteCol As Integer
@@ -151,13 +138,13 @@ Sub Export_Macro()
     curRow = 2
     copyCol = 164
     pasteCol = 5
-    RC = ttRC
+    RC = TTInp_MaxRow
     'TT LOB data copy
     Call GetNewData(inputSheet, exportSheet, copyStart, RC, copyCol, pasteCol, curRow)
     
     'Sets parameters for SS "LOB" information
     copyStart = 32
-    RC = ssRC
+    RC = SSInp_MaxRow
     'SS LOB data copy
     Call GetNewData(inputSheet, exportSheet, copyStart, RC, copyCol, pasteCol, curRow)
     
@@ -170,13 +157,13 @@ Sub Export_Macro()
     curRow = 2
     copyCol = 163
     pasteCol = 8
-    RC = ttRC
+    RC = TTInp_MaxRow
     'TT LOB data copy
     Call GetNewData(inputSheet, exportSheet, copyStart, RC, copyCol, pasteCol, curRow)
     
     'Sets parameters for SS "Shore" information
     copyStart = 32
-    RC = ssRC
+    RC = SSInp_MaxRow
     'SS LOB data copy
     Call GetNewData(inputSheet, exportSheet, copyStart, RC, copyCol, pasteCol, curRow)
 
@@ -195,7 +182,7 @@ Sub Export_Macro()
     Next rng
     
     'Autofits column size for legibility
-    Columns("E:EH").EntireColumn.AutoFit
+    Columns("A:EH").EntireColumn.AutoFit
 End Sub
 
 Sub SetTopBorder(pasteLoc)
@@ -210,25 +197,14 @@ Sub SetTopBorder(pasteLoc)
     End With
 End Sub
 
-Sub GetRowCount(inputSheet, curRow, rowCount)
-' File name: GetRowCount
-' Author: Erin Payne
-' Description: Gets row count for any range of rows.
-
-    While Sheets(inputSheet).Cells(curRow, 1).Value <> "DO NOT DELETE THIS ROW!!!"
-        rowCount = rowCount + 1
-        curRow = curRow + 1
-    Wend
-End Sub
-
-Sub GetData(inputSheet, exportSheet, copyStart, curRow, pasteLoc, rowCount, category)
+Sub GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
 ' File name: GetData
 ' Author: Erin Payne
 ' Description: Copys, pastes, and renames input data for export
 
     Sheets(inputSheet).Activate                                                'initializes macro at input sheet
     'Copies and pastes information to blank sheet
-    Range(Cells(copyStart, 1), Cells(curRow - 1, 138)).Copy                    'Copies data for transfer
+    Range(Cells(copyStart, 1), Cells(rowCount + copyStart - 1, termLength)).Copy           'Copies data for transfer
     Sheets(exportSheet).Activate
     Cells(pasteLoc, 1).PasteSpecial Paste:=xlPasteValuesAndNumberFormats, _
         Operation:=xlNone, SkipBlanks:=False, Transpose:=False                 'Pastes data to blank sheet
@@ -255,11 +231,24 @@ Sub GetNewData(inputSheet, exportSheet, copyStart, RC, copyCol, pasteCol, curRow
     Next i
 End Sub
 
-Sub GetCost(inputSheet, exportSheet, copyStart, curRow, RC)
+Sub GetCost()
 'Calculates monthly costs
 ' Sub name: GetCost
 ' Author: Erin Payne
 ' Description: Calculates monthly costs
-
-
+    Dim tthc As Range
+    hc = TTInp_HC
+    
+    Dim rate As Range
+    rate = TTInp_Modeled_Cost_Rates
+    
+    Dim hrs As Range
+    hrs = TTInp_Mthly_Cost_Hrs
+    
+    Dim ans As Range 'Need to be an integer?
+    ans = hc * rate * hrs
+    
+    Sheets(exportSheet).Range(Cells(pasteRow, pasteCol), Cells(pasteRow + rowCount, pasteCol + colCount)).Value = ans
+    'Range().Style = "Currency"
+    
 End Sub
