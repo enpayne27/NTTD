@@ -22,13 +22,19 @@ Sub Export_Macro()
     OthInp_MaxRow = Application.Evaluate("OthInp_MaxRow")
     
     SSInp_FirstRow = Int(Right(ActiveWorkbook.Names("SSInp_FirstRow"), 3))
+    SSInp_HC = Application.Evaluate("SSInp_HC")
     SSInp_LOB = Application.Evaluate("SSInp_LOB")
     SSInp_Shore = Application.Evaluate("SSInp_Shore")
     SSInp_MaxRow = Application.Evaluate("SSInp_MaxRow")
+    SSInp_Rates = Application.Evaluate("SSInp_Modeled_Cost_Rates")
+    SSInp_Hrs = Application.Evaluate("SSInp_Mthly_Cost_Hrs")
     
     TTInp_FirstRow = Int(Right(ActiveWorkbook.Names("TTInp_FirstRow"), 2))
+    TTInp_HC = Array(Application.Evaluate("TTInp_HC"))
     TTInp_LOB = Application.Evaluate("TTInp_LOB")
     TTInp_MaxRow = Application.Evaluate("TTInp_MaxRow")
+    TTInp_Rates = Array(Application.Evaluate("TTInp_Modeled_Cost_Rates"))
+    TTInp_Hrs = Array(Application.Evaluate("TTInp_Mthly_Cost_Hrs"))
     TTInp_Shore = Application.Evaluate("TTInp_Shore")
     
     TVLInp_FirstRow = Int(Right(ActiveWorkbook.Names("TVLInp_FirstRow"), 2))
@@ -173,6 +179,23 @@ Sub Export_Macro()
     Sheets(exportSheet).Range(Cells(pasteRow, copyStart), Cells(pasteLoc - 1, copyStart)).Cut Range(Cells(pasteRow, ShoreCat), Cells(pasteLoc - 1, ShoreCat))
     Application.CutCopyMode = False
     
+   '************************************************************************
+    pasteRow = 2
+    pasteCol = 21
+    rowCount = TTInp_MaxRow
+    
+    'For i = 1 To 4
+        Range(Cells(pasteRow, pasteCol), Cells(pasteRow + rowCount - 1, pasteCol + termLength)).Select
+        Selection.FormulaArray = "=TTInp_HC*TTInp_Modeled_Cost_Rates*TTInp_Mthly_Cost_Hrs"pasteRow = pasteRow + rowCount
+    'Next i
+    
+    rowCount = SSInp_MaxRow
+    For i = 1 To 4
+        Range(Cells(pasteRow, pasteCol), Cells(pasteRow + rowCount - 1, pasteCol + termLength)).FormulaArray = "=SSInp_HC*SSInp_Modeled_Cost_Rates*SSInp_Mthly_Cost_Hrs"
+        pasteRow = pasteRow + rowCount
+    Next i
+    '************************************************************************
+	
     'Hides blank rows of sheet
     Dim rng As Range
     For Each rng In Range(Cells(2, 3), Cells(pasteLoc - 1, 3))
@@ -221,29 +244,20 @@ Sub GetNewData(pasteRow, pasteCol, pasteData, rowCount)
 ' Author: Erin Payne
 ' Description: Copys, pastes, and renames LOB and Shore data for export
 
-    'Sheets(exportSheet).Activate
     'Pastes data to blank sheet
     Range(Cells(pasteRow, pasteCol), Cells(pasteRow + rowCount - 1, pasteCol)).FormulaR1C1 = pasteData
     pasteRow = pasteRow + rowCount
 End Sub
 
-Sub GetCost()
+Sub GetCost(pasteRow, pasteCol, termLength, rowCount, hc, rate, hrs)
 'Calculates monthly costs
 ' Sub name: GetCost
 ' Author: Erin Payne
 ' Description: Calculates monthly costs
-    Dim tthc As Range
-    hc = TTInp_HC
     
-    Dim rate As Range
-    rate = TTInp_Modeled_Cost_Rates
+    'Dim ans As Range 'Need to be an integer?
     
-    Dim hrs As Range
-    hrs = TTInp_Mthly_Cost_Hrs
-    
-    Dim ans As Range 'Need to be an integer?
-    ans = hc * rate * hrs
-    
-    Sheets(exportSheet).Range(Cells(pasteRow, pasteCol), Cells(pasteRow + rowCount, pasteCol + colCount)).Value = ans
+    Range(Cells(pasteRow, pasteCol), Cells(pasteRow + rowCount - 1, pasteCol + termLength)).FormulaArray = hc * rate * hrs
+    pasteRow = pasteRow + rowCount
     'Range().Style = "Currency"
 End Sub
