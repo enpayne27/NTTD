@@ -17,12 +17,20 @@ Sub Export_Macro()
     'Initializes all variables used from Name Manager
     HWInp_FirstRow = Int(Right(ActiveWorkbook.Names("HWInp_FirstRow"), 3))  'Takes row number from formula and converts to equivalent integer
     HWInp_MaxRow = Application.Evaluate("HWInp_MaxRow")                     'Takes total number of rows for given section
+    
     OthInp_FirstRow = Int(Right(ActiveWorkbook.Names("OthInp_FirstRow"), 3))
     OthInp_MaxRow = Application.Evaluate("OthInp_MaxRow")
+    
     SSInp_FirstRow = Int(Right(ActiveWorkbook.Names("SSInp_FirstRow"), 3))
+    SSInp_LOB = Application.Evaluate("SSInp_LOB")
+    SSInp_Shore = Application.Evaluate("SSInp_Shore")
     SSInp_MaxRow = Application.Evaluate("SSInp_MaxRow")
+    
     TTInp_FirstRow = Int(Right(ActiveWorkbook.Names("TTInp_FirstRow"), 2))
+    TTInp_LOB = Application.Evaluate("TTInp_LOB")
     TTInp_MaxRow = Application.Evaluate("TTInp_MaxRow")
+    TTInp_Shore = Application.Evaluate("TTInp_Shore")
+    
     TVLInp_FirstRow = Int(Right(ActiveWorkbook.Names("TVLInp_FirstRow"), 2))
     TVLInp_MaxRow = Application.Evaluate("TVLInp_MaxRow")
     termLength = Application.Evaluate("TermLength")
@@ -42,17 +50,18 @@ Sub Export_Macro()
     'Category title of data inputted
     Dim category As String
     
+    
     'TT FTE data copy
-    Sheets(inputSheet).Activate                                           'initializes macro at "FTE Input" sheet
+    Sheets(inputSheet).Activate                                                    'initializes macro at "FTE Input" sheet
     'Copies and pastes TT FTE information to blank sheet
-    Range(Cells(copyStart, 1), Cells(rowCount + copyStart, termLength)).Copy          'Copies TT data for transfer
-    Sheets(exportSheet).Activate                                          'initializes macro at "Blank Sheet 2" for pasting
+    Range(Cells(copyStart, 1), Cells(rowCount + copyStart, termLength)).Copy       'Copies TT data for transfer
+    Sheets(exportSheet).Activate                                                   'initializes macro at "Blank Sheet 2" for pasting
     Cells(pasteLoc, 1).PasteSpecial _
         Paste:=xlPasteValuesAndNumberFormats, Operation:=xlNone, _
-        SkipBlanks:=False, Transpose:=False                               'Pastes data to blank sheet
-    Cells(pasteLoc, 1).FormulaR1C1 = "Category"                           'Renames "Labor" heading to "Category"
-    Rows(pasteLoc).Style = "Input Heading"                                'Adds heading format to first row
-    Cells(pasteLoc + 1, 1).FormulaR1C1 = "TT FTE"                         'Renames "Labor" to "TT FTE"
+        SkipBlanks:=False, Transpose:=False                                        'Pastes data to blank sheet
+    Cells(pasteLoc, 1).FormulaR1C1 = "Category"                                    'Renames "Labor" heading to "Category"
+    Rows(pasteLoc).Style = "Input Heading"                                         'Adds heading format to first row
+    Cells(pasteLoc + 1, 1).FormulaR1C1 = "TT FTE"                                  'Renames "Labor" to "TT FTE"
     Cells(pasteLoc + 1, 1).AutoFill Destination:=Range(Cells(pasteLoc + 1, 1), _
         Cells(rowCount + 1, 1)), Type:=xlFillDefault
     
@@ -60,115 +69,108 @@ Sub Export_Macro()
     pasteLoc = rowCount + 2   'Incremented by 1 to exclude heading line and begin on new line
     
     'TT Base Labor Cost data copy
-    category = "TT Base Labor Cost"
-    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
+    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, "TT Base Labor Cost", termLength)
 
     'TT Cost COLA data copy
-    category = "TT Cost COLA"
-    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
+    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, "TT Cost COLA", termLength)
 
     'TT Cost Contingency data copy
-    category = "TT Cost Contingency"
-    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
+    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, "TT Cost Contingency", termLength)
     
 
-    'Sets row size of SS data
-    rowCount = SSInp_MaxRow
+    'Sets parameters for SS data copy
+    rowCount = SSInp_MaxRow        'Sets row size of SS data
     copyStart = SSInp_FirstRow + 1 'Incremented by 1 to exclude heading line
 
     'SS FTE data copy
-    category = "SS FTE"
-    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
+    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, "SS FTE", termLength)
 
     'SS Base Labor Cost data copy
-    category = "SS Base Labor Cost"
-    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
+    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, "SS Base Labor Cost", termLength)
 
     'SS Cost COLA data copy
-    category = "SS Cost COLA"
-    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
+    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, "SS Cost COLA", termLength)
 
     'SS Cost Contingency data copy
-    category = "SS Cost Contingency"
-    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
+    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, "SS Cost Contingency", termLength)
+    
     
     'Saves start of "Other Input" in exportSheet for billing info move
-    Dim otherIn As Integer
-    otherIn = pasteLoc
+    Dim pasteRow As Integer
+    pasteRow = pasteLoc
     
     'Sets parameters for "Other" data copy
     inputSheet = "Other Input"
 
     'Travel Cost data copy
-    rowCount = TVLInp_MaxRow
-    copyStart = TVLInp_FirstRow + 1
-    category = "Travel Cost"
-    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
+    Call GetData(inputSheet, exportSheet, TVLInp_FirstRow + 1, pasteLoc, TVLInp_MaxRow, "Travel Cost", termLength)
 
     'Other Cost data copy
-    rowCount = OthInp_MaxRow
-    copyStart = OthInp_FirstRow + 1
-    category = "Other Cost"
-    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
+    Call GetData(inputSheet, exportSheet, OthInp_FirstRow + 1, pasteLoc, OthInp_MaxRow, "Other Cost", termLength)
     
     'HW/SW Cost data copy
-    rowCount = HWInp_MaxRow
-    copyStart = HWInp_FirstRow + 1
-    category = "HW/SW Cost"
-    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
+    Call GetData(inputSheet, exportSheet, HWInp_FirstRow + 1, pasteLoc, HWInp_MaxRow, "HW/SW Cost", termLength)
+    
     
     'Inserts "LOB" column
-    Columns("E:E").Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
-    Range("E1").FormulaR1C1 = "LOB"
+    Dim LOBCat As Integer 'Column number for LOB category in exportSheet
+    LOBCat = 5            'Column "E"
+    Columns(LOBCat).Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+    Cells(1, LOBCat).FormulaR1C1 = "LOB"
+    
     'Inserts "Shore" column
-    Columns("H:H").Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
-    Range("H1").FormulaR1C1 = "Shore"
+    Dim ShoreCat As Integer 'Column number for Shore category in exportSheet
+    ShoreCat = 8            'Column "H"
+    Columns(ShoreCat).Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+    Cells(1, ShoreCat).FormulaR1C1 = "Shore"
     
-    'Moves Other Input billing information to column B for unity
-    Sheets(exportSheet).Range(Cells(otherIn, 18), Cells(pasteLoc - 1, 18)).Cut Range(Cells(otherIn, 2), Cells(pasteLoc - 1, 2))
-     Application.CutCopyMode = False
-    
-    Dim copyCol As Integer
-    Dim pasteCol As Integer
-    Dim RC As Integer
-    
-    'Sets parameters for TT "LOB" information
-    inputSheet = "FTE Input"
-    copyStart = 9
-    curRow = 2
-    copyCol = 164
-    pasteCol = 5
-    RC = TTInp_MaxRow
-    'TT LOB data copy
-    Call GetNewData(inputSheet, exportSheet, copyStart, RC, copyCol, pasteCol, curRow)
-    
-    'Sets parameters for SS "LOB" information
-    copyStart = 32
-    RC = SSInp_MaxRow
-    'SS LOB data copy
-    Call GetNewData(inputSheet, exportSheet, copyStart, RC, copyCol, pasteCol, curRow)
-    
-    'Moves Other Input LOB information to column E for unity
-    Sheets(exportSheet).Range(Cells(otherIn, 10), Cells(pasteLoc - 1, 10)).Cut Range(Cells(otherIn, 5), Cells(pasteLoc - 1, 5))
+    'Moves Other Input billing information from R to column B for unity
+    Dim BillCat As Integer 'Column number for Billing category in exportSheet
+    BillCat = 2
+    copyStart = 18
+    Sheets(exportSheet).Range(Cells(pasteRow, copyStart), Cells(pasteLoc - 1, copyStart)).Cut Range(Cells(pasteRow, BillCat), Cells(pasteLoc - 1, BillCat))
     Application.CutCopyMode = False
     
-    'Sets parameters for TT "Shore" information
-    copyStart = 9
-    curRow = 2
-    copyCol = 163
-    pasteCol = 8
-    RC = TTInp_MaxRow
-    'TT LOB data copy
-    Call GetNewData(inputSheet, exportSheet, copyStart, RC, copyCol, pasteCol, curRow)
-    
-    'Sets parameters for SS "Shore" information
-    copyStart = 32
-    RC = SSInp_MaxRow
-    'SS LOB data copy
-    Call GetNewData(inputSheet, exportSheet, copyStart, RC, copyCol, pasteCol, curRow)
 
+    'Sets parameters for LOB data copy
+    Dim pasteCol As Integer
+    pasteRow = 2
+    pasteCol = LOBCat
+    
+    'TT LOB data copy
+    Dim i As Integer
+     For i = 1 To 4
+        Call GetNewData(pasteRow, pasteCol, TTInp_LOB, TTInp_MaxRow)
+    Next i
+    
+    'SS LOB data copy
+    For i = 1 To 4
+        Call GetNewData(pasteRow, pasteCol, SSInp_LOB, SSInp_MaxRow)
+    Next i
+    
+    'Moves Other Input LOB information from column J to column E for unity
+    copyStart = 10
+    Sheets(exportSheet).Range(Cells(pasteRow, copyStart), Cells(pasteLoc - 1, copyStart)).Cut Range(Cells(pasteRow, LOBCat), Cells(pasteLoc - 1, LOBCat))
+    Application.CutCopyMode = False
+    
+    
+    'Sets parameters for Shore information
+    pasteRow = 2
+    pasteCol = ShoreCat
+    
+    'TT Shore data copy
+    For i = 1 To 4
+        Call GetNewData(pasteRow, pasteCol, TTInp_Shore, TTInp_MaxRow)
+    Next i
+    
+    'SS LOB data copy
+    For i = 1 To 4
+        Call GetNewData(pasteRow, pasteCol, SSInp_Shore, SSInp_MaxRow)
+    Next i
+    
     'Moves Other Input Shore information to column H for unity
-    Sheets(exportSheet).Range(Cells(otherIn, 9), Cells(pasteLoc - 1, 9)).Cut Range(Cells(otherIn, 8), Cells(pasteLoc - 1, 8))
+    copyStart = 9
+    Sheets(exportSheet).Range(Cells(pasteRow, copyStart), Cells(pasteLoc - 1, copyStart)).Cut Range(Cells(pasteRow, ShoreCat), Cells(pasteLoc - 1, ShoreCat))
     Application.CutCopyMode = False
     
     'Hides blank rows of sheet
@@ -202,33 +204,27 @@ Sub GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, te
 ' Author: Erin Payne
 ' Description: Copys, pastes, and renames input data for export
 
-    Sheets(inputSheet).Activate                                                'initializes macro at input sheet
+    Sheets(inputSheet).Activate                                                  'initializes macro at input sheet
     'Copies and pastes information to blank sheet
-    Range(Cells(copyStart, 1), Cells(rowCount + copyStart - 1, termLength)).Copy           'Copies data for transfer
+    Range(Cells(copyStart, 1), Cells(rowCount + copyStart - 1, termLength)).Copy 'Copies data for transfer
     Sheets(exportSheet).Activate
     Cells(pasteLoc, 1).PasteSpecial Paste:=xlPasteValuesAndNumberFormats, _
-        Operation:=xlNone, SkipBlanks:=False, Transpose:=False                 'Pastes data to blank sheet
-    Cells(pasteLoc, 1).FormulaR1C1 = category                                  'Renames cateogry title
+        Operation:=xlNone, SkipBlanks:=False, Transpose:=False                   'Pastes data to export sheet
+    Cells(pasteLoc, 1).FormulaR1C1 = category                                    'Renames category title
     Cells(pasteLoc, 1).AutoFill Destination:=Range(Cells(pasteLoc, 1), Cells(pasteLoc + rowCount - 1, 1)), Type:=xlFillDefault
     Call SetTopBorder(pasteLoc)
     pasteLoc = pasteLoc + rowCount
-
 End Sub
 
-Sub GetNewData(inputSheet, exportSheet, copyStart, RC, copyCol, pasteCol, curRow)
+Sub GetNewData(pasteRow, pasteCol, pasteData, rowCount)
 ' File name: GetNewData
 ' Author: Erin Payne
 ' Description: Copys, pastes, and renames LOB and Shore data for export
-    Dim i As Integer
-    For i = 1 To 4
-            Sheets(inputSheet).Activate
-            Range(Cells(copyStart, copyCol), Cells(copyStart + RC - 1, copyCol)).Copy  'Copies data for transfer
-            Sheets(exportSheet).Activate
-            Range(Cells(curRow, pasteCol), Cells(curRow + RC - 1, pasteCol)).PasteSpecial _
-                Paste:=xlPasteValuesAndNumberFormats, Operation:= _
-                xlNone, SkipBlanks:=False, Transpose:=False                            'Pastes data to blank sheet
-            curRow = curRow + RC                                                       'Increments current row
-    Next i
+
+    'Sheets(exportSheet).Activate
+    'Pastes data to blank sheet
+    Range(Cells(pasteRow, pasteCol), Cells(pasteRow + rowCount - 1, pasteCol)).FormulaR1C1 = pasteData
+    pasteRow = pasteRow + rowCount
 End Sub
 
 Sub GetCost()
@@ -250,5 +246,4 @@ Sub GetCost()
     
     Sheets(exportSheet).Range(Cells(pasteRow, pasteCol), Cells(pasteRow + rowCount, pasteCol + colCount)).Value = ans
     'Range().Style = "Currency"
-    
 End Sub
