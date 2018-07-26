@@ -189,25 +189,23 @@ Sub Export_Macro()
     Sheets(exportSheet).Range(Cells(pasteRow, copyStart), Cells(pasteLoc - 1, copyStart)).Cut Range(Cells(pasteRow, ShoreCat), Cells(pasteLoc - 1, ShoreCat))
     Application.CutCopyMode = False
     
+    
+    'Imports HC data for COLA and Contingency subsections
     inputSheet = "FTE Input"
     pasteCol = 21
     
+    'TT HC data copy
     Sheets(inputSheet).Range("TTInp_HC_ExpCOLA").Copy
     Sheets(exportSheet).Range(Cells(TT_Cost_COLA, pasteCol), Cells(TT_Cost_COLA + TTInp_MaxRow, pasteCol + termLength - 1)).PasteSpecial xlPasteValues
     Sheets(inputSheet).Range("TTInp_HC_Cont").Copy
     Sheets(exportSheet).Range(Cells(TT_Cost_Cont, pasteCol), Cells(TT_Cost_Cont + TTInp_MaxRow, pasteCol + termLength - 1)).PasteSpecial xlPasteValues
     
+    'SS HC data copy
     Sheets(inputSheet).Range("SSInp_HC_ExpCOLA").Copy
     Sheets(exportSheet).Range(Cells(SS_Cost_COLA, pasteCol), Cells(SS_Cost_COLA + SSInp_MaxRow, pasteCol + termLength - 1)).PasteSpecial xlPasteValues
     Sheets(inputSheet).Range("SSInp_HC_Cont").Copy
     Sheets(exportSheet).Range(Cells(SS_Cost_Cont, pasteCol), Cells(SS_Cost_Cont + SSInp_MaxRow, pasteCol + termLength - 1)).PasteSpecial xlPasteValues
-    
-    '************************************************************************
-    Dim HC As Range
-    Set HC = Sheets(exportSheet).Range(Cells(TT_Cost_Base, pasteCol), Cells(TT_Cost_Base + TTInp_MaxRow - 1, pasteCol + termLength))
-    Range(Cells(TT_Cost_Base + 100, pasteCol), Cells(TT_Cost_Base + TTInp_MaxRow + 99, pasteCol + termLength)).FormulaArray = "=HC*TTInp_Modeled_Cost_Rates*TTInp_Mthly_Cost_Hrs"
-    
-    '***********************************************************************
+
     'Hides blank rows of sheet
     Dim rng As Range
     For Each rng In Range(Cells(2, 3), Cells(pasteLoc - 1, 3))
@@ -266,10 +264,7 @@ Sub GetCost(pasteRow, pasteCol, termLength, rowCount, HC, rate, hrs)
 ' Sub name: GetCost
 ' Author: Erin Payne
 ' Description: Calculates monthly costs
-    
-    'Dim ans As Range 'Need to be an integer?
-    
-    Range(Cells(pasteRow, pasteCol), Cells(pasteRow + rowCount - 1, pasteCol + termLength)).FormulaArray = HC * rate * hrs
-    pasteRow = pasteRow + rowCount
-    'Range().Style = "Currency"
+
+    'Include for loops for cost calculations navigating through each HC cell and multiplying that value by rates and hours.
+
 End Sub
