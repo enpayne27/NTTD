@@ -22,19 +22,17 @@ Sub Export_Macro()
     OthInp_MaxRow = Application.Evaluate("OthInp_MaxRow")
     
     SSInp_FirstRow = Int(Right(ActiveWorkbook.Names("SSInp_FirstRow"), 3))
-    SSInp_HC = Application.Evaluate("SSInp_HC")
     SSInp_LOB = Application.Evaluate("SSInp_LOB")
-    SSInp_Shore = Application.Evaluate("SSInp_Shore")
     SSInp_MaxRow = Application.Evaluate("SSInp_MaxRow")
-    SSInp_Rates = Application.Evaluate("SSInp_Modeled_Cost_Rates")
-    SSInp_Hrs = Application.Evaluate("SSInp_Mthly_Cost_Hrs")
+    'SSInp_Rates = Application.Evaluate("SSInp_Modeled_Cost_Rates")
+    'SSInp_Hrs = Application.Evaluate("SSInp_Mthly_Cost_Hrs")
+    SSInp_Shore = Application.Evaluate("SSInp_Shore")
     
     TTInp_FirstRow = Int(Right(ActiveWorkbook.Names("TTInp_FirstRow"), 2))
-    TTInp_HC = Array(Application.Evaluate("TTInp_HC"))
     TTInp_LOB = Application.Evaluate("TTInp_LOB")
     TTInp_MaxRow = Application.Evaluate("TTInp_MaxRow")
-    TTInp_Rates = Array(Application.Evaluate("TTInp_Modeled_Cost_Rates"))
-    TTInp_Hrs = Array(Application.Evaluate("TTInp_Mthly_Cost_Hrs"))
+    'TTInp_Rates = Array(Application.Evaluate("TTInp_Modeled_Cost_Rates"))
+    'TTInp_Hrs = Array(Application.Evaluate("TTInp_Mthly_Cost_Hrs"))
     TTInp_Shore = Application.Evaluate("TTInp_Shore")
     
     TVLInp_FirstRow = Int(Right(ActiveWorkbook.Names("TVLInp_FirstRow"), 2))
@@ -60,7 +58,7 @@ Sub Export_Macro()
     'TT FTE data copy
     Sheets(inputSheet).Activate                                                    'initializes macro at "FTE Input" sheet
     'Copies and pastes TT FTE information to blank sheet
-    Range(Cells(copyStart, 1), Cells(rowCount + copyStart, termLength)).Copy       'Copies TT data for transfer
+    Range(Cells(copyStart, 1), Cells(rowCount + copyStart, 21 + termLength)).Copy      'Copies TT data for transfer
     Sheets(exportSheet).Activate                                                   'initializes macro at "Blank Sheet 2" for pasting
     Cells(pasteLoc, 1).PasteSpecial _
         Paste:=xlPasteValuesAndNumberFormats, Operation:=xlNone, _
@@ -75,15 +73,21 @@ Sub Export_Macro()
     pasteLoc = rowCount + 2   'Incremented by 1 to exclude heading line and begin on new line
     
     'TT Base Labor Cost data copy
+    Dim TT_Cost_Base As Integer 'Starting row number of TT Base Labor Cost section
+    TT_Cost_Base = pasteLoc
     Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, "TT Base Labor Cost", termLength)
+    '*Call cost calculation here
 
     'TT Cost COLA data copy
+    Dim TT_Cost_COLA As Integer 'Starting row number of TT Cost COLA section
+    TT_Cost_COLA = pasteLoc
     Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, "TT Cost COLA", termLength)
-
-    'TT Cost Contingency data copy
-    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, "TT Cost Contingency", termLength)
     
-
+    'TT Cost Contingency data copy
+    Dim TT_Cost_Cont As Integer 'Starting row number of TT Cost Contingency section
+    TT_Cost_Cont = pasteLoc
+    Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, "TT Cost Contingency", termLength)
+ 
     'Sets parameters for SS data copy
     rowCount = SSInp_MaxRow        'Sets row size of SS data
     copyStart = SSInp_FirstRow + 1 'Incremented by 1 to exclude heading line
@@ -92,12 +96,18 @@ Sub Export_Macro()
     Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, "SS FTE", termLength)
 
     'SS Base Labor Cost data copy
+    Dim SS_Cost_Base As Integer 'Starting row number of SS Base Labor Cost section
+    SS_Cost_Base = pasteLoc
     Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, "SS Base Labor Cost", termLength)
 
     'SS Cost COLA data copy
+    Dim SS_Cost_COLA As Integer 'Starting row number of SS Cost COLA section
+    SS_Cost_COLA = pasteLoc
     Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, "SS Cost COLA", termLength)
 
     'SS Cost Contingency data copy
+    Dim SS_Cost_Cont As Integer 'Starting row number of SS Cost Contingency section
+    SS_Cost_Cont = pasteLoc
     Call GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, "SS Cost Contingency", termLength)
     
     
@@ -179,23 +189,25 @@ Sub Export_Macro()
     Sheets(exportSheet).Range(Cells(pasteRow, copyStart), Cells(pasteLoc - 1, copyStart)).Cut Range(Cells(pasteRow, ShoreCat), Cells(pasteLoc - 1, ShoreCat))
     Application.CutCopyMode = False
     
-   '************************************************************************
-    pasteRow = 2
+    inputSheet = "FTE Input"
     pasteCol = 21
-    rowCount = TTInp_MaxRow
     
-    'For i = 1 To 4
-        Range(Cells(pasteRow, pasteCol), Cells(pasteRow + rowCount - 1, pasteCol + termLength)).Select
-        Selection.FormulaArray = "=TTInp_HC*TTInp_Modeled_Cost_Rates*TTInp_Mthly_Cost_Hrs"pasteRow = pasteRow + rowCount
-    'Next i
+    Sheets(inputSheet).Range("TTInp_HC_ExpCOLA").Copy
+    Sheets(exportSheet).Range(Cells(TT_Cost_COLA, pasteCol), Cells(TT_Cost_COLA + TTInp_MaxRow, pasteCol + termLength - 1)).PasteSpecial xlPasteValues
+    Sheets(inputSheet).Range("TTInp_HC_Cont").Copy
+    Sheets(exportSheet).Range(Cells(TT_Cost_Cont, pasteCol), Cells(TT_Cost_Cont + TTInp_MaxRow, pasteCol + termLength - 1)).PasteSpecial xlPasteValues
     
-    rowCount = SSInp_MaxRow
-    For i = 1 To 4
-        Range(Cells(pasteRow, pasteCol), Cells(pasteRow + rowCount - 1, pasteCol + termLength)).FormulaArray = "=SSInp_HC*SSInp_Modeled_Cost_Rates*SSInp_Mthly_Cost_Hrs"
-        pasteRow = pasteRow + rowCount
-    Next i
+    Sheets(inputSheet).Range("SSInp_HC_ExpCOLA").Copy
+    Sheets(exportSheet).Range(Cells(SS_Cost_COLA, pasteCol), Cells(SS_Cost_COLA + SSInp_MaxRow, pasteCol + termLength - 1)).PasteSpecial xlPasteValues
+    Sheets(inputSheet).Range("SSInp_HC_Cont").Copy
+    Sheets(exportSheet).Range(Cells(SS_Cost_Cont, pasteCol), Cells(SS_Cost_Cont + SSInp_MaxRow, pasteCol + termLength - 1)).PasteSpecial xlPasteValues
+    
     '************************************************************************
-	
+    Dim HC As Range
+    Set HC = Sheets(exportSheet).Range(Cells(TT_Cost_Base, pasteCol), Cells(TT_Cost_Base + TTInp_MaxRow - 1, pasteCol + termLength))
+    Range(Cells(TT_Cost_Base + 100, pasteCol), Cells(TT_Cost_Base + TTInp_MaxRow + 99, pasteCol + termLength)).FormulaArray = "=HC*TTInp_Modeled_Cost_Rates*TTInp_Mthly_Cost_Hrs"
+    
+    '***********************************************************************
     'Hides blank rows of sheet
     Dim rng As Range
     For Each rng In Range(Cells(2, 3), Cells(pasteLoc - 1, 3))
@@ -229,7 +241,7 @@ Sub GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, te
 
     Sheets(inputSheet).Activate                                                  'initializes macro at input sheet
     'Copies and pastes information to blank sheet
-    Range(Cells(copyStart, 1), Cells(rowCount + copyStart - 1, termLength)).Copy 'Copies data for transfer
+    Range(Cells(copyStart, 1), Cells(rowCount + copyStart - 1, 21 + termLength)).Copy 'Copies data for transfer
     Sheets(exportSheet).Activate
     Cells(pasteLoc, 1).PasteSpecial Paste:=xlPasteValuesAndNumberFormats, _
         Operation:=xlNone, SkipBlanks:=False, Transpose:=False                   'Pastes data to export sheet
@@ -249,7 +261,7 @@ Sub GetNewData(pasteRow, pasteCol, pasteData, rowCount)
     pasteRow = pasteRow + rowCount
 End Sub
 
-Sub GetCost(pasteRow, pasteCol, termLength, rowCount, hc, rate, hrs)
+Sub GetCost(pasteRow, pasteCol, termLength, rowCount, HC, rate, hrs)
 'Calculates monthly costs
 ' Sub name: GetCost
 ' Author: Erin Payne
@@ -257,7 +269,7 @@ Sub GetCost(pasteRow, pasteCol, termLength, rowCount, hc, rate, hrs)
     
     'Dim ans As Range 'Need to be an integer?
     
-    Range(Cells(pasteRow, pasteCol), Cells(pasteRow + rowCount - 1, pasteCol + termLength)).FormulaArray = hc * rate * hrs
+    Range(Cells(pasteRow, pasteCol), Cells(pasteRow + rowCount - 1, pasteCol + termLength)).FormulaArray = HC * rate * hrs
     pasteRow = pasteRow + rowCount
     'Range().Style = "Currency"
 End Sub
