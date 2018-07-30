@@ -219,7 +219,7 @@ Sub Export_Macro()
     'SS cost calculation
     copyRow = 31
     rowCount = SSInp_MaxRow
-    pasteRow = pasteRow + rowCount - 1
+    pasteRow = pasteRow + rowCount
     Call GetCost(importSheet, exportSheet, copyRow, 19, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'SS Base Labor cost calculation
     Call GetCost(importSheet, exportSheet, copyRow, 315, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'SS COLA cost calculation
     Call GetCost(importSheet, exportSheet, copyRow, 436, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'SS Contingency calculation
@@ -251,9 +251,9 @@ Sub SetTopBorder(pasteLoc)
 End Sub
 
 Sub GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, termLength)
-' File name: GetData
+' Sub name: GetData
 ' Author: Erin Payne
-' Description: Copys, pastes, and renames input data for export
+' Description: Copies, pastes, and renames input data for export.
 
     Sheets(inputSheet).Activate                                                  'initializes macro at input sheet
     'Copies and pastes information to blank sheet
@@ -268,9 +268,9 @@ Sub GetData(inputSheet, exportSheet, copyStart, pasteLoc, rowCount, category, te
 End Sub
 
 Sub GetNewData(pasteRow, pasteCol, pasteData, rowCount)
-' File name: GetNewData
+' Sub name: GetNewData
 ' Author: Erin Payne
-' Description: Copys, pastes, and renames LOB and Shore data for export
+' Description: Copies, pastes, and renames LOB and Shore data for export.
 
     'Pastes data to blank sheet
     Range(Cells(pasteRow, pasteCol), Cells(pasteRow + rowCount - 1, pasteCol)).FormulaR1C1 = pasteData
@@ -278,22 +278,23 @@ Sub GetNewData(pasteRow, pasteCol, pasteData, rowCount)
 End Sub
 
 Sub GetCost(importSheet, exportSheet, copyRow, copyCol, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength)
-'Calculates monthly costs
 ' Sub name: GetCost
 ' Author: Erin Payne
-' Description: Calculates monthly costs
+' Description: Calculates monthly costs.
     
-    Dim hc As Integer
-    Dim rate As Integer
-    Dim hrs As Integer
+    Dim hc As Long 'Head count to be calculated
+    Dim rate As Long 'Cost rate to be calculated
+    Dim hrs As Long 'Cost hours to be calculated
 
+    'Navigates through rows
     For i = copyRow To copyRow + rowCount - 1
         hrs = Sheets(importSheet).Cells(i, hrsCol).Value
         rate = Sheets(importSheet).Cells(i, rateCol).Value
         cost = rate * hrs
         
+        'Navigates through columns
         For j = copyCol To copyCol + termLength - 1
-            hc = Sheets(importSheet).Cells(i, j).Value
+            hc = Sheets(exportSheet).Cells(pasteRow, pasteCol).Value
             ans = hc * cost
             Sheets(exportSheet).Cells(pasteRow, pasteCol).Value = ans
             pasteCol = pasteCol + 1
@@ -301,5 +302,4 @@ Sub GetCost(importSheet, exportSheet, copyRow, copyCol, pasteRow, pasteCol, hrsC
         pasteRow = pasteRow + 1
         pasteCol = 21
     Next i
-    'pasteRow = pasteRow + rowCount
 End Sub
