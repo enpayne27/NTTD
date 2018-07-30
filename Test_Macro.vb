@@ -24,15 +24,11 @@ Sub Export_Macro()
     SSInp_FirstRow = Int(Right(ActiveWorkbook.Names("SSInp_FirstRow"), 3))
     SSInp_LOB = Application.Evaluate("SSInp_LOB")
     SSInp_MaxRow = Application.Evaluate("SSInp_MaxRow")
-    'SSInp_Rates = Application.Evaluate("SSInp_Modeled_Cost_Rates")
-    'SSInp_Hrs = Application.Evaluate("SSInp_Mthly_Cost_Hrs")
     SSInp_Shore = Application.Evaluate("SSInp_Shore")
     
     TTInp_FirstRow = Int(Right(ActiveWorkbook.Names("TTInp_FirstRow"), 2))
     TTInp_LOB = Application.Evaluate("TTInp_LOB")
     TTInp_MaxRow = Application.Evaluate("TTInp_MaxRow")
-    'TTInp_Rates = Array(Application.Evaluate("TTInp_Modeled_Cost_Rates"))
-    'TTInp_Hrs = Array(Application.Evaluate("TTInp_Mthly_Cost_Hrs"))
     TTInp_Shore = Application.Evaluate("TTInp_Shore")
     
     TVLInp_FirstRow = Int(Right(ActiveWorkbook.Names("TVLInp_FirstRow"), 2))
@@ -196,15 +192,37 @@ Sub Export_Macro()
     
     'TT HC data copy
     Sheets(inputSheet).Range("TTInp_HC_ExpCOLA").Copy
-    Sheets(exportSheet).Range(Cells(TT_Cost_COLA, pasteCol), Cells(TT_Cost_COLA + TTInp_MaxRow, pasteCol + termLength - 1)).PasteSpecial xlPasteValues
+    Sheets(exportSheet).Range(Cells(TT_Cost_COLA, pasteCol), Cells(TT_Cost_COLA + TTInp_MaxRow, pasteCol + termLength - 1)).PasteSpecial xlPasteValues 'TT COLA HC data copy
     Sheets(inputSheet).Range("TTInp_HC_Cont").Copy
-    Sheets(exportSheet).Range(Cells(TT_Cost_Cont, pasteCol), Cells(TT_Cost_Cont + TTInp_MaxRow, pasteCol + termLength - 1)).PasteSpecial xlPasteValues
+    Sheets(exportSheet).Range(Cells(TT_Cost_Cont, pasteCol), Cells(TT_Cost_Cont + TTInp_MaxRow, pasteCol + termLength - 1)).PasteSpecial xlPasteValues 'TT Contingency HC data copy
     
     'SS HC data copy
     Sheets(inputSheet).Range("SSInp_HC_ExpCOLA").Copy
-    Sheets(exportSheet).Range(Cells(SS_Cost_COLA, pasteCol), Cells(SS_Cost_COLA + SSInp_MaxRow, pasteCol + termLength - 1)).PasteSpecial xlPasteValues
+    Sheets(exportSheet).Range(Cells(SS_Cost_COLA, pasteCol), Cells(SS_Cost_COLA + SSInp_MaxRow, pasteCol + termLength - 1)).PasteSpecial xlPasteValues 'SS COLA HC data copy
     Sheets(inputSheet).Range("SSInp_HC_Cont").Copy
-    Sheets(exportSheet).Range(Cells(SS_Cost_Cont, pasteCol), Cells(SS_Cost_Cont + SSInp_MaxRow, pasteCol + termLength - 1)).PasteSpecial xlPasteValues
+    Sheets(exportSheet).Range(Cells(SS_Cost_Cont, pasteCol), Cells(SS_Cost_Cont + SSInp_MaxRow, pasteCol + termLength - 1)).PasteSpecial xlPasteValues 'SS Contingency HC data copy
+
+
+    'TT cost calculation
+    importSheet = "FTE Input"
+    rowCount = TTInp_MaxRow
+    copyRow = 9                 'Begins calculations at row 9 on import sheet
+    pasteRow = 2 + rowCount     'Begins calculation paste after first set of TT FTE data
+    pasteCol = 21               'Begins calculation paste at column 21 on export sheet
+    hrsCol = 166                'Column including monthly cost hours data
+    rateCol = 153               'Column including cost rate data
+    
+    Call GetCost(importSheet, exportSheet, copyRow, 19, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'TT Base Labor cost calculation
+    Call GetCost(importSheet, exportSheet, copyRow, 315, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'TT COLA cost calculation
+    Call GetCost(importSheet, exportSheet, copyRow, 436, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'TT Contingency calculation
+    
+    'SS cost calculation
+    copyRow = 31
+    rowCount = SSInp_MaxRow
+    pasteRow = pasteRow + rowCount - 1
+    Call GetCost(importSheet, exportSheet, copyRow, 19, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'SS Base Labor cost calculation
+    Call GetCost(importSheet, exportSheet, copyRow, 315, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'SS COLA cost calculation
+    Call GetCost(importSheet, exportSheet, copyRow, 436, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'SS Contingency calculation
 
     'Hides blank rows of sheet
     Dim rng As Range
@@ -259,12 +277,29 @@ Sub GetNewData(pasteRow, pasteCol, pasteData, rowCount)
     pasteRow = pasteRow + rowCount
 End Sub
 
-Sub GetCost(pasteRow, pasteCol, termLength, rowCount, HC, rate, hrs)
+Sub GetCost(importSheet, exportSheet, copyRow, copyCol, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength)
 'Calculates monthly costs
 ' Sub name: GetCost
 ' Author: Erin Payne
 ' Description: Calculates monthly costs
+    
+    Dim hc As Integer
+    Dim rate As Integer
+    Dim hrs As Integer
 
-    'Include for loops for cost calculations navigating through each HC cell and multiplying that value by rates and hours.
-
+    For i = copyRow To copyRow + rowCount - 1
+        hrs = Sheets(importSheet).Cells(i, hrsCol).Value
+        rate = Sheets(importSheet).Cells(i, rateCol).Value
+        cost = rate * hrs
+        
+        For j = copyCol To copyCol + termLength - 1
+            hc = Sheets(importSheet).Cells(i, j).Value
+            ans = hc * cost
+            Sheets(exportSheet).Cells(pasteRow, pasteCol).Value = ans
+            pasteCol = pasteCol + 1
+        Next j
+        pasteRow = pasteRow + 1
+        pasteCol = 21
+    Next i
+    'pasteRow = pasteRow + rowCount
 End Sub
