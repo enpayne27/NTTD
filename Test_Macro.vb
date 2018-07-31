@@ -1,11 +1,12 @@
-Sub Export_Macro()
-' File name: Export_Test Macro
+Sub Detailed_Report()
+' File name: Detailed_Report
 ' Author: Erin Payne
-' Description: File for additional data export.
+' Description: File for additional data export
     
     'Displays status message
     Application.StatusBar = "Detailed report is being generated... Please be patient."
     Application.ScreenUpdating = False
+    Application.Calculation = xlCalculationManual
     
     'Sheet copying input from
     Dim inputSheet As String
@@ -216,17 +217,23 @@ Sub Export_Macro()
     hrsCol = 166                'Column including monthly cost hours data
     rateCol = 153               'Column including cost rate data
     
+    Application.StatusBar = "Computing calculation: 1 of 6... Please wait."
     Call GetCost(importSheet, exportSheet, copyRow, 19, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'TT Base Labor cost calculation
+    Application.StatusBar = "Computing calculation: 2 of 6... Please wait."
     Call GetCost(importSheet, exportSheet, copyRow, 315, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'TT COLA cost calculation
+    Application.StatusBar = "Computing calculation: 3 of 6... Please wait."
     Call GetCost(importSheet, exportSheet, copyRow, 436, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'TT Contingency calculation
     
     'SS cost calculation
-    copyRow = 31
+    copyRow = copyRow + rowCount + 10
     rowCount = SSInp_MaxRow
     pasteRow = pasteRow + rowCount
     
+    Application.StatusBar = "Computing calculation: 4 of 6... Please wait."
     Call GetCost(importSheet, exportSheet, copyRow, 19, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'SS Base Labor cost calculation
+    Application.StatusBar = "Computing calculation: 5 of 6... Please wait."
     Call GetCost(importSheet, exportSheet, copyRow, 315, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'SS COLA cost calculation
+    Application.StatusBar = "Computing calculation: 6 of 6... Please wait."
     Call GetCost(importSheet, exportSheet, copyRow, 436, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'SS Contingency calculation
 
     'Deletes blank rows of sheet
@@ -245,6 +252,8 @@ Sub Export_Macro()
     
     'Updates screen and displays completion message
     Application.ScreenUpdating = True
+    Application.Calculation = xlCalculationAutomatic
+    Application.StatusBar = "Report complete."
     MsgBox ("Detailed report has been generated. Thank you for your patience. Have a great day! :)")
     
 End Sub
