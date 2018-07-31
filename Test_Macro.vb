@@ -3,13 +3,17 @@ Sub Export_Macro()
 ' Author: Erin Payne
 ' Description: File for additional data export.
     
+    'Displays status message
+    Application.StatusBar = "Detailed report is being generated... Please be patient."
+    Application.ScreenUpdating = False
+    
     'Sheet copying input from
     Dim inputSheet As String
     inputSheet = "FTE Input"
     
     'Sheet pasting input to
     Dim exportSheet As String
-    exportSheet = "Blank Sheet 2"
+    exportSheet = "Detailed Report"
     
     Sheets(exportSheet).Cells.Clear 'Clears any previous data inputted on exportSheet
     Rows.EntireRow.Hidden = False
@@ -54,7 +58,7 @@ Sub Export_Macro()
     'TT FTE data copy
     Sheets(inputSheet).Activate                                                    'initializes macro at "FTE Input" sheet
     'Copies and pastes TT FTE information to blank sheet
-    Range(Cells(copyStart, 1), Cells(rowCount + copyStart, 21 + termLength)).Copy      'Copies TT data for transfer
+    Range(Cells(copyStart, 1), Cells(rowCount + copyStart, 21 + termLength)).Copy  'Copies TT data for transfer
     Sheets(exportSheet).Activate                                                   'initializes macro at "Blank Sheet 2" for pasting
     Cells(pasteLoc, 1).PasteSpecial _
         Paste:=xlPasteValuesAndNumberFormats, Operation:=xlNone, _
@@ -220,6 +224,7 @@ Sub Export_Macro()
     copyRow = 31
     rowCount = SSInp_MaxRow
     pasteRow = pasteRow + rowCount
+    
     Call GetCost(importSheet, exportSheet, copyRow, 19, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'SS Base Labor cost calculation
     Call GetCost(importSheet, exportSheet, copyRow, 315, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'SS COLA cost calculation
     Call GetCost(importSheet, exportSheet, copyRow, 436, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'SS Contingency calculation
@@ -236,6 +241,11 @@ Sub Export_Macro()
     
     'Autofits column size for legibility
     Columns("A:EH").EntireColumn.AutoFit
+    
+    'Updates screen and displays completion message
+    Application.ScreenUpdating = True
+    MsgBox ("Detailed report has been generated. Thank you for your patience. Have a great day! :)")
+    
 End Sub
 
 Sub SetTopBorder(pasteLoc)
@@ -282,9 +292,9 @@ Sub GetCost(importSheet, exportSheet, copyRow, copyCol, pasteRow, pasteCol, hrsC
 ' Author: Erin Payne
 ' Description: Calculates monthly costs.
     
-    Dim hc As Long 'Head count to be calculated
-    Dim rate As Long 'Cost rate to be calculated
-    Dim hrs As Long 'Cost hours to be calculated
+    Dim hc As Double 'Head count to be calculated
+    Dim rate As Double 'Cost rate to be calculated
+    Dim hrs As Double 'Cost hours to be calculated
 
     'Navigates through rows
     For i = copyRow To copyRow + rowCount - 1
@@ -294,7 +304,7 @@ Sub GetCost(importSheet, exportSheet, copyRow, copyCol, pasteRow, pasteCol, hrsC
         
         'Navigates through columns
         For j = copyCol To copyCol + termLength - 1
-            hc = Sheets(exportSheet).Cells(pasteRow, pasteCol).Value
+            hc = Sheets(importSheet).Cells(i, j).Value
             ans = hc * cost
             Sheets(exportSheet).Cells(pasteRow, pasteCol).Value = ans
             pasteCol = pasteCol + 1
