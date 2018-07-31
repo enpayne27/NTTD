@@ -229,15 +229,16 @@ Sub Export_Macro()
     Call GetCost(importSheet, exportSheet, copyRow, 315, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'SS COLA cost calculation
     Call GetCost(importSheet, exportSheet, copyRow, 436, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'SS Contingency calculation
 
-    'Hides blank rows of sheet
-    Dim rng As Range
-    For Each rng In Range(Cells(2, 3), Cells(pasteLoc - 1, 3))
-        If rng.Value = "" Then
-            rng.EntireRow.Hidden = True
+    'Deletes blank rows of sheet
+    i = 2
+    Do While i < pasteLoc
+        If Cells(i, 3).Value = "" Then
+            Rows(i).EntireRow.Delete
+            pasteLoc = pasteLoc - 1
         Else
-            rng.EntireRow.Hidden = False
+            i = i + 1
         End If
-    Next rng
+    Loop
     
     'Autofits column size for legibility
     Columns("A:EH").EntireColumn.AutoFit
