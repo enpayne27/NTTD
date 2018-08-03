@@ -235,9 +235,11 @@ Sub Detailed_Report()
     Call GetCost(importSheet, exportSheet, copyRow, 315, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'SS COLA cost calculation
     Application.StatusBar = "Computing calculation: 6 of 6... Please wait."
     Call GetCost(importSheet, exportSheet, copyRow, 436, pasteRow, pasteCol, hrsCol, rateCol, rowCount, termLength) 'SS Contingency calculation
-
+    
     'Deletes blank rows of sheet
+    'Application.StatusBar = "Removing all unused rows... One moment."
     i = 2
+    Application.StatusBar = "Formatting final data for your viewing pleasure..."
     Do While i < pasteLoc
         If Cells(i, 3).Value = "" Then
             Rows(i).EntireRow.Delete
@@ -253,8 +255,8 @@ Sub Detailed_Report()
     'Updates screen and displays completion message
     Application.ScreenUpdating = True
     Application.Calculation = xlCalculationAutomatic
-    Application.StatusBar = "Report complete."
-    MsgBox ("Detailed report has been generated. Thank you for your patience. Have a great day! :)")
+    Application.StatusBar = "Report complete"
+    MsgBox Prompt:="Your detailed report has been generated." + vbCrLf + "Thank you for your patience." + vbCrLf + "Have a great day! :)", Title:="Report Complete"
     
 End Sub
 
@@ -314,10 +316,10 @@ Sub GetCost(importSheet, exportSheet, copyRow, copyCol, pasteRow, pasteCol, hrsC
         
         'Navigates through columns
         For j = copyCol To copyCol + termLength - 1
-            hc = Sheets(importSheet).Cells(i, j).Value
-            ans = hc * cost
-            Sheets(exportSheet).Cells(pasteRow, pasteCol).Value = ans
-            pasteCol = pasteCol + 1
+                hc = Sheets(importSheet).Cells(i, j).Value
+                ans = hc * cost
+                Sheets(exportSheet).Cells(pasteRow, pasteCol).Value = ans
+                pasteCol = pasteCol + 1
         Next j
         pasteRow = pasteRow + 1
         pasteCol = 21
