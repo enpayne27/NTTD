@@ -190,6 +190,12 @@ Sub Detailed_Report()
     Sheets(exportSheet).Range(Cells(pasteRow, copyStart), Cells(pasteLoc - 1, copyStart)).Cut Range(Cells(pasteRow, ShoreCat), Cells(pasteLoc - 1, ShoreCat))
     Application.CutCopyMode = False
     
+    'Moves Other Input PriceTag information to column Q for unity
+    copyStart = 16
+    pasteCol = 17
+    Sheets(exportSheet).Range(Cells(pasteRow, copyStart), Cells(pasteLoc - 1, copyStart)).Cut Range(Cells(pasteRow, pasteCol), Cells(pasteLoc - 1, pasteCol))
+    Application.CutCopyMode = False
+    
     
     'Imports HC data for COLA and Contingency subsections
     inputSheet = "FTE Input"
